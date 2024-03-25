@@ -75,8 +75,26 @@ onClickOutside(selectContainer, () => {
 <style scoped>
 .select-list {
     @apply transition-all duration-200 absolute left-0 bg-black/50 w-full p-4 rounded-lg max-h-52
-        overflow-y-scroll;
+        overflow-y-auto;
     top: calc(100% + 5px);
+}
+
+.select-list::-webkit-scrollbar {
+    width: 17px;
+}
+
+.select-list::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.select-list::-webkit-scrollbar-thumb {
+    background-color: #FFFFFF32;
+    border: 5px solid transparent;
+    background-clip: padding-box;
+    border-radius: 100px;
+}
+.select-list::-webkit-scrollbar-thumb:hover {
+    background-color: #FFFFFF50;
 }
 
 .slide-down-enter-from,
