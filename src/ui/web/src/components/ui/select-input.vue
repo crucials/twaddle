@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { SelectItem } from '@/types/select-item'
 import { computed, ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside, onKeyStroke } from '@vueuse/core'
+import TextInput from '@/components/ui/text-input.vue'
 
 const props = defineProps<{
     items: SelectItem[]
     selectedItemName: string | null
     placeholder?: string
+    searchable?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -23,32 +25,34 @@ function chooseItem(name: string) {
     listOpened.value = false
 }
 
+const searchText = ref('')
+const filteredItems = computed(() => {
+    const processedSearchText = searchText.value.trim().toUpperCase()
+    return props.items.filter(item => item.name.toUpperCase().includes(processedSearchText)
+        || item.label.toUpperCase().includes(processedSearchText))
+})
+
 const selectContainer = ref<HTMLDivElement>()
 onClickOutside(selectContainer, () => {
+    listOpened.value = false
+})
+
+onKeyStroke('Escape', () => {
     listOpened.value = false
 })
 </script>
 
 <template>
     <div class="relative" ref="selectContainer">
-        <Transition name="slide-down">
-            <ul class="select-list" v-show="listOpened">
-                <li v-for="item in items" :key="item.name" class="mb-3 last:mb-0">
-                    <button
-                        class="text-white"
-                        @click="chooseItem(item.name)"
-                    >
-                        {{ item.label }}
-                    </button>
-                </li>
-            </ul>
-        </Transition>
-
         <button
             class="bg-white border border-neutral-300 rounded-lg px-6 py-3.5
                 transition-colors hover:border-neutral-400
-                flex items-center gap-x-3.5 outline-neutral-600 min-w-60"
+                flex items-center gap-x-3.5 outline-neutral-600 min-w-60 z-20"
             @click="listOpened = !listOpened"
+            :aria-expanded="listOpened"
+            tabindex="0"
+            aria-controls="selectItemList"
+            aria-haspopup="listbox"
         >
             <svg
                 :class="{
@@ -69,13 +73,47 @@ onClickOutside(selectContainer, () => {
                 {{ placeholder }}
             </span>
         </button>
+
+        <Transition name="slide-down">
+            <div
+                v-show="listOpened"
+                class="select-list"
+            >
+                <TextInput
+                    v-if="searchable"
+                    v-model="searchText"
+                    placeholder="search"
+                    class="min-w-full w-full mb-4"
+                    size="small"
+                />
+                
+                <ul
+                    class="w-full"
+                    role="listbox"
+                    id="selectItemList"
+                >
+                    <li
+                        v-for="item in filteredItems" :key="item.name"
+                        class="block mb-3 last:mb-0"
+                        role="option"
+                    >
+                        <button
+                            class="text-white px-2 py-1 rounded-lg hover:bg-white/20 focus:bg-white/30 w-full text-start"
+                            @click="chooseItem(item.name)"
+                        >
+                            {{ item.label }}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </Transition>
     </div>
 </template>
 
 <style scoped>
 .select-list {
     @apply transition-all duration-200 absolute left-0 bg-black/50 w-full p-4 rounded-lg max-h-52
-        overflow-y-auto;
+        overflow-y-auto overflow-x-hidden z-10;
     top: calc(100% + 5px);
 }
 
