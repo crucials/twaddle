@@ -1,22 +1,58 @@
 <script setup lang="ts">
-import SelectField from '@/components/ui/select-input.vue'
-import { ref } from 'vue'
+import SelectInput from '@/components/ui/select-input.vue'
+import { computed, reactive, ref } from 'vue'
+import { supportedLanguages } from '@/supported-languages.ts'
 
 const wordLists = [
-    'all', 'english swears', 'english swears1', 'english2', 'english54343', '12312', '125467', '000'
+    'all', 'english swears', 'english parasitic words', 'russian swears',
+    'russian parasitic words'
 ].map(label => ({
     name: label, 
-    label: label
+    label: label,
 }))
 
 const selectedWordList = ref('all')
+const language = ref('en')
+
+const countingProcess = reactive<{
+    secondsRunning?: number
+    result?: Record<string, string>
+}>({})
+const timer = computed(() => {
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+    date.setMinutes(0)
+
+    date.setSeconds(countingProcess.secondsRunning || 0)
+
+    let currentDayHours = date.getHours()
+    return currentDayHours + ':' + date.toLocaleTimeString(undefined, {
+        minute: '2-digit', second: '2-digit'
+    })
+})
+
+async function startCounter() {
+    // const response = await eel.startCountingFromMicrophone()
+    countingProcess.secondsRunning = 0
+
+    const intervalId = window.setInterval(() => {
+        if(countingProcess.secondsRunning !== undefined) {
+            countingProcess.secondsRunning += 1
+        }
+    }, 1000)
+}
+
+function stopCounter() {
+    
+}
 </script>
 
 <template>
     <form
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
             flex items-start gap-x-14 h-72"
-        @submit.prevent=""
+        @submit.prevent="startCounter"
+        v-if="countingProcess.secondsRunning === undefined"
     >
         <button
             class="w-28 h-28 bg-white shadow-black/30 shadow-2xl rounded-full
@@ -38,11 +74,28 @@ const selectedWordList = ref('all')
             <div class="mb-1">
                 words to count
             </div>
-            <SelectField
+            <SelectInput
                 :items="wordLists"
                 v-model:selectedItemName="selectedWordList"
-                placeholder="select the word list"
+            />
+        </label>
+
+        <label>
+            <div class="mb-1">
+                speech language
+            </div>
+            <SelectInput
+                :items="Object.keys(supportedLanguages).map(languageCode => ({
+                    name: languageCode, label: supportedLanguages[languageCode]
+                }))"
+                searchable
+                v-model:selectedItemName="language"
             />
         </label>
     </form>
+
+    <div v-else class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-
+        flex items-start gap-x-14 h-72">
+        {{ timer }}
+    </div>
 </template>
