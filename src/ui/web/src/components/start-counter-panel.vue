@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import SelectInput from '@/components/ui/select-input.vue'
 import { computed, reactive, ref } from 'vue'
+import SelectInput from '@/components/ui/select-input.vue'
+import FilledButton from '@/components/ui/filled-button.vue'
+import { useNotificationsStore } from '@/stores/notifications'
 import { supportedLanguages } from '@/supported-languages.ts'
+import { EelResponse } from '@/types/eel-response'
+
+const { showNotification } = useNotificationsStore()
 
 const wordLists = [
     'all', 'english swears', 'english parasitic words', 'russian swears',
@@ -18,6 +23,8 @@ const countingProcess = reactive<{
     secondsRunning?: number
     result?: Record<string, string>
 }>({})
+
+let secondsCountingIntervalId: number | undefined = undefined
 const timer = computed(() => {
     const date = new Date()
     date.setHours(0, 0, 0, 0)
@@ -25,37 +32,50 @@ const timer = computed(() => {
 
     date.setSeconds(countingProcess.secondsRunning || 0)
 
-    let currentDayHours = date.getHours()
-    return currentDayHours + ':' + date.toLocaleTimeString(undefined, {
+    const hours = `${date.getHours()}`.padStart(2, '0')
+    const minutesAndSeconds = date.toLocaleTimeString(undefined, {
         minute: '2-digit', second: '2-digit'
     })
+
+    if(hours === '00') {
+        return minutesAndSeconds
+    }
+    else {
+        return hours + ':' + minutesAndSeconds
+    }
 })
 
 async function startCounter() {
-    // const response = await eel.startCountingFromMicrophone()
-    countingProcess.secondsRunning = 0
+    // const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
+    
+    /* countingProcess.secondsRunning = 0
 
-    const intervalId = window.setInterval(() => {
+    secondsCountingIntervalId = window.setInterval(() => {
         if(countingProcess.secondsRunning !== undefined) {
             countingProcess.secondsRunning += 1
         }
-    }, 1000)
+    }, 1000) */
+
+    showNotification({ text: 'error, error, error, error, error', type: 'error' })
 }
 
-function stopCounter() {
+async function stopCounter() {
+    const response = await eel.stopCounterFromMicrophone()()
     
+    window.clearInterval(secondsCountingIntervalId)
+    countingProcess.secondsRunning = undefined
 }
 </script>
 
 <template>
     <form
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
-            flex items-start gap-x-14 h-72"
+            flex items-start gap-x-14 gap-y-8 min-h-72 flex-wrap"
         @submit.prevent="startCounter"
         v-if="countingProcess.secondsRunning === undefined"
     >
         <button
-            class="w-28 h-28 bg-white shadow-black/30 shadow-2xl rounded-full
+            class="w-28 h-28 bg-white shadow-black/20 shadow-2xl rounded-full
                 flex items-center justify-center
                 transition-transform duration-300 hover:scale-105"
             title="start words counter"
@@ -94,8 +114,14 @@ function stopCounter() {
         </label>
     </form>
 
-    <div v-else class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-
+    <div v-else class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
         flex items-start gap-x-14 h-72">
-        {{ timer }}
+        <time :datetime="timer" class="text-neutral-400 font-medium text-5xl">
+            {{ timer }}
+        </time>
+
+        <FilledButton>
+            submit
+        </FilledButton>
     </div>
 </template>

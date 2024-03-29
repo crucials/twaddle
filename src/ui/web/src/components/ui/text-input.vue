@@ -14,7 +14,7 @@ const emit = defineEmits<{
     <input
         :value="modelValue"
         type="text"
-        class="text-input bg-white rounded-lg text-neutral-800 transition-colors
+        class="bg-white rounded-lg text-neutral-800 transition-colors
             min-w-60 flex items-center gap-x-3.5 outline-neutral-800 bg-no-repeat"
         :class="{
             'px-4 py-3.5 text-base': size === 'medium',
@@ -23,10 +23,3 @@ const emit = defineEmits<{
         @input="event => emit('update:modelValue', (event.target as HTMLInputElement).value)"
     />
 </template>
-
-<style scoped>
-.text-input {
-    background-position-x: 16px;
-    background-position-y: center;
-}
-</style>

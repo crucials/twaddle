@@ -53,6 +53,7 @@ onKeyStroke('Escape', () => {
             tabindex="0"
             aria-controls="selectItemList"
             aria-haspopup="listbox"
+            type="button"
         >
             <svg
                 :class="{
