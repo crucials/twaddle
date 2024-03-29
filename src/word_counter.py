@@ -13,10 +13,12 @@ import whisper
 Language = Literal['ru', 'en']
 
 counter_running = False
-words_count = {}
+words_count_values = {}
 
 def __transcribe(speech_transcriber: whisper.Whisper, audio_file_path: str,
                  language: Language):
+    global words_count_values
+
     print('started transcribing')
     response = speech_transcriber.transcribe(audio_file_path, language=language,
                                              condition_on_previous_text=True)
@@ -28,15 +30,16 @@ def __transcribe(speech_transcriber: whisper.Whisper, audio_file_path: str,
     )
     
     for spoken_word in filter(lambda word: word.strip() != '', spoken_text.split(' ')):
-        if spoken_word in words_count:
-            words_count[spoken_word] += 1
+        if spoken_word in words_count_values:
+            words_count_values[spoken_word] += 1
         else:
-            words_count[spoken_word] = 1
+            words_count_values[spoken_word] = 1
 
     return response
 
 def start_counting(language: Language):
     global counter_running
+    global words_count_values
 
     print('loading a transcribe model')
     speech_transcriber = whisper.load_model('small')
@@ -81,7 +84,7 @@ def start_counting(language: Language):
 
         audio.terminate()
 
-    return words_count
+    return words_count_values
 
 def stop_counting():
     global counter_running
