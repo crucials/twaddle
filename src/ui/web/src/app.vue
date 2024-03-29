@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StartCounterPanel from '@/components/start-counter-panel.vue'
+import Notifications from '@/components/notifications.vue'
 </script>
 
 <template>
@@ -21,7 +22,7 @@ import StartCounterPanel from '@/components/start-counter-panel.vue'
             </h1>
         </header>
 
-        <main>
+        <main class="flex-grow">
             <p class="text-lg font-normal max-w-[900px] mb-10">
                 this app records your speech, transcribes it and provides a list of words that you said with the usage
                 count. needed words can be specified
@@ -30,6 +31,8 @@ import StartCounterPanel from '@/components/start-counter-panel.vue'
             <StartCounterPanel />
         </main>
     </div>
+
+    <Notifications />
 </template>
 
 <style>
@@ -49,7 +52,13 @@ import StartCounterPanel from '@/components/start-counter-panel.vue'
     font-weight: 500;
 }
 
-* {
-    @apply font-graphik text-neutral-900;
+@layer base {
+    body {
+        @apply h-screen;
+    }
+    
+    * {
+        @apply font-graphik text-neutral-900;
+    }
 }
 </style>
