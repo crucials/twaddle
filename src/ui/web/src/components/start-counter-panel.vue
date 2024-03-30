@@ -46,14 +46,12 @@ const timer = computed(() => {
 })
 
 async function startCounter() {
-    /* const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
+    const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })
         return
-    } */
-
-    showNotification({ type: 'success', text: '123' })
+    }
     
     countingProcess.secondsRunning = 0
 
