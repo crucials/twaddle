@@ -21,7 +21,7 @@ const language = ref('en')
 
 const countingProcess = reactive<{
     secondsRunning?: number
-    result?: Record<string, string>
+    result?: Record<string, number>
 }>({})
 
 let secondsCountingIntervalId: number | undefined = undefined
@@ -46,33 +46,44 @@ const timer = computed(() => {
 })
 
 async function startCounter() {
-    // const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
+    const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
+
+    if(response.error) {
+        showNotification({ type: 'error', text: response.error.explanation })
+        return
+    }
     
-    /* countingProcess.secondsRunning = 0
+    countingProcess.secondsRunning = 0
 
     secondsCountingIntervalId = window.setInterval(() => {
         if(countingProcess.secondsRunning !== undefined) {
             countingProcess.secondsRunning += 1
         }
-    }, 1000) */
-
-    showNotification({ text: 'error, error, error, error, error', type: 'error' })
+    }, 1000)
 }
 
 async function stopCounter() {
-    const response = await eel.stopCounterFromMicrophone()()
+    const response: EelResponse<Record<string, number>> = await eel.stopCounterFromMicrophone()()
+    console.log(response)
+
+    if(response.error) {
+        showNotification({ type: 'error', text: response.error.explanation })
+        return
+    }
     
     window.clearInterval(secondsCountingIntervalId)
     countingProcess.secondsRunning = undefined
+    countingProcess.result = response.data || {}
 }
 </script>
 
 <template>
     <form
+        v-if="countingProcess.secondsRunning === undefined
+            && countingProcess.result === undefined"
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
             flex items-start gap-x-14 gap-y-8 min-h-72 flex-wrap"
         @submit.prevent="startCounter"
-        v-if="countingProcess.secondsRunning === undefined"
     >
         <button
             class="w-28 h-28 bg-white shadow-black/20 shadow-2xl rounded-full
@@ -114,14 +125,26 @@ async function stopCounter() {
         </label>
     </form>
 
-    <div v-else class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
-        flex items-start gap-x-14 h-72">
+    <div
+        v-else-if="countingProcess.result === undefined
+            && countingProcess.secondsRunning !== undefined"
+        class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
+            flex items-start gap-x-14 h-72"
+    >
         <time :datetime="timer" class="text-neutral-400 font-medium text-5xl">
             {{ timer }}
         </time>
 
-        <FilledButton>
+        <FilledButton @click="stopCounter">
             submit
         </FilledButton>
+    </div>
+
+    <div
+        v-else-if="countingProcess.result !== undefined"
+        class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
+            flex items-start gap-x-14 h-72"
+    >
+        {{ countingProcess.result }}
     </div>
 </template>
