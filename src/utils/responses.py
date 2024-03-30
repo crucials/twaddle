@@ -1,4 +1,4 @@
-from errors.detailed_error import DetailedError
+from ui.errors.detailed_error import DetailedError
 
 
 # response is what js code in 'ui' folder gets as a result of exposed python function
