@@ -4,7 +4,7 @@ import Notifications from '@/components/notifications.vue'
 </script>
 
 <template>
-    <div class="px-9 py-7">
+    <div class="px-9 py-7 sm:px-6 sm:py-6">
         <header class="flex items-center gap-x-6 mb-10">
             <svg class="w-14" viewBox="0 0 78 78" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path

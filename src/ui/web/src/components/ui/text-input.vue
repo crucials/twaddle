@@ -15,10 +15,10 @@ const emit = defineEmits<{
         :value="modelValue"
         type="text"
         class="bg-white rounded-lg text-neutral-800 transition-colors
-            min-w-60 flex items-center gap-x-3.5 outline-neutral-800 bg-no-repeat"
+            flex items-center gap-x-3.5 outline-neutral-800 bg-no-repeat"
         :class="{
-            'px-4 py-3.5 text-base': size === 'medium',
-            'px-2.5 py-1.5 text-base': size === 'small'
+            'px-4 py-3.5 sm:px-3 sm:py-3': size === 'medium',
+            'px-2.5 py-1.5 sm:px-2': size === 'small'
         }"
         @input="event => emit('update:modelValue', (event.target as HTMLInputElement).value)"
     />

@@ -46,12 +46,14 @@ const timer = computed(() => {
 })
 
 async function startCounter() {
-    const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
+    /* const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })
         return
-    }
+    } */
+
+    showNotification({ type: 'success', text: '123' })
     
     countingProcess.secondsRunning = 0
 
@@ -82,12 +84,12 @@ async function stopCounter() {
         v-if="countingProcess.secondsRunning === undefined
             && countingProcess.result === undefined"
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
-            flex items-start gap-x-14 gap-y-8 min-h-72 flex-wrap"
+            flex items-start gap-x-14 gap-y-8 min-h-72 sm:flex-wrap-reverse"
         @submit.prevent="startCounter"
     >
         <button
             class="w-28 h-28 bg-white shadow-black/20 shadow-2xl rounded-full
-                flex items-center justify-center
+                flex items-center justify-center flex-shrink-0
                 transition-transform duration-300 hover:scale-105"
             title="start words counter"
         >
@@ -101,35 +103,37 @@ async function stopCounter() {
             </svg>
         </button>
         
-        <label>
-            <div class="mb-1">
-                words to count
-            </div>
-            <SelectInput
-                :items="wordLists"
-                v-model:selectedItemName="selectedWordList"
-            />
-        </label>
+        <div class="flex-grow flex items-start gap-x-8 sm:gap-x-4 gap-y-8 flex-wrap">
+            <label class="flex-grow max-w-64 min-w-52">
+                <div class="mb-1">
+                    words to count
+                </div>
+                <SelectInput
+                    :items="wordLists"
+                    v-model:selectedItemName="selectedWordList"
+                />
+            </label>
 
-        <label>
-            <div class="mb-1">
-                speech language
-            </div>
-            <SelectInput
-                :items="Object.keys(supportedLanguages).map(languageCode => ({
-                    name: languageCode, label: supportedLanguages[languageCode]
-                }))"
-                searchable
-                v-model:selectedItemName="language"
-            />
-        </label>
+            <label class="flex-grow max-w-64 min-w-52">
+                <div class="mb-1">
+                    speech language
+                </div>
+                <SelectInput
+                    :items="Object.keys(supportedLanguages).map(languageCode => ({
+                        name: languageCode, label: supportedLanguages[languageCode]
+                    }))"
+                    searchable
+                    v-model:selectedItemName="language"
+                />
+            </label>
+        </div>
     </form>
 
     <div
         v-else-if="countingProcess.result === undefined
             && countingProcess.secondsRunning !== undefined"
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
-            flex items-start gap-x-14 h-72"
+            flex items-start gap-x-14 gap-y-8 min-h-72 flex-wrap content-start"
     >
         <time :datetime="timer" class="text-neutral-400 font-medium text-5xl">
             {{ timer }}
@@ -143,7 +147,7 @@ async function stopCounter() {
     <div
         v-else-if="countingProcess.result !== undefined"
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
-            flex items-start gap-x-14 h-72"
+            flex items-start gap-x-14 gap-y-8 min-h-72 flex-wrap"
     >
         {{ countingProcess.result }}
     </div>

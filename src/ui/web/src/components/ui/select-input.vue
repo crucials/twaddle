@@ -43,11 +43,12 @@ onKeyStroke('Escape', () => {
 </script>
 
 <template>
-    <div class="relative" ref="selectContainer">
+    <div class="relative min-w-52 sm:min-w-44" ref="selectContainer">
         <button
-            class="bg-white border border-neutral-300 rounded-lg px-6 py-3.5
+            class="bg-white border border-neutral-300 rounded-lg
+                px-6 py-3.5 sm:px-4 sm:py-3
                 transition-colors hover:border-neutral-400
-                flex items-center gap-x-3.5 outline-neutral-600 min-w-60 z-20"
+                flex items-center gap-x-3.5 outline-neutral-600 w-full z-20"
             @click="listOpened = !listOpened"
             :aria-expanded="listOpened"
             tabindex="0"
