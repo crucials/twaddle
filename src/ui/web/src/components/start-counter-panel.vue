@@ -52,7 +52,7 @@ async function startCounter() {
         showNotification({ type: 'error', text: response.error.explanation })
         return
     }
-    
+
     countingProcess.secondsRunning = 0
 
     secondsCountingIntervalId = window.setInterval(() => {
@@ -64,7 +64,6 @@ async function startCounter() {
 
 async function stopCounter() {
     const response: EelResponse<Record<string, number>> = await eel.stopCounterFromMicrophone()()
-    console.log(response)
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })

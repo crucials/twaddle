@@ -18,6 +18,7 @@ speech_transcriber: whisper.Whisper | None = None
 class WordCounter:
     running = False
     __finished_last_transcribing = False
+    
     error: Exception | None = None
 
     words_count_values = {}
