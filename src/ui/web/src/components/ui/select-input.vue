@@ -99,6 +99,7 @@ onKeyStroke('Escape', () => {
                         role="option"
                     >
                         <button
+                            type="button"
                             class="text-white px-2 py-1 rounded-lg hover:bg-white/20 focus:bg-white/30 w-full text-start"
                             @click="chooseItem(item.name)"
                         >
