@@ -8,7 +8,7 @@ const { notifications } = storeToRefs(useNotificationsStore())
 <template>
     <TransitionGroup
         tag="ul"
-        class="fixed bottom-4 right-4 flex flex-col gap-y-4 w-96"
+        class="fixed bottom-4 right-4 flex flex-col gap-y-4 w-[410px] sm:w-96 xs:w-full"
         enter-from-class="translate-x-12 opacity-0"
         leave-to-class="translate-x-12 opacity-0"
         tabindex="0"
@@ -16,9 +16,25 @@ const { notifications } = storeToRefs(useNotificationsStore())
         <li
             v-for="notification in notifications"
             :key="notification.id"
-            class="transition-all duration-300 bg-white/40 backdrop-blur-sm border-2 border-neutral-300 rounded-lg w-full px-8 py-6"
+            class="relative transition-all duration-300 bg-white shadow-lg border-2 
+                border-neutral-300 rounded-lg w-full px-8 py-6"
+            :class="{
+                'shadow-emerald-300/50': notification.type === 'success',
+                'shadow-red-300/50': notification.type === 'error'
+            }"
         >
             {{ notification.text }}
+
+            <button
+                class="transition-colors duration-300 absolute top-2 rounded-full right-2 p-1
+                    hover:bg-neutral-100"
+                @click="notifications = notifications.filter(someNotification =>
+                    someNotification.id !== notification.id)"
+            >
+                <svg class="w-5" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 19L11 11M19 3L11 11M11 11L19 19M11 11L3 3" stroke="#BCBCBC" stroke-width="2"/>
+                </svg>
+            </button>
         </li>
     </TransitionGroup>
 </template>
