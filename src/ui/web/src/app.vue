@@ -60,5 +60,23 @@ import Notifications from '@/components/notifications.vue'
     * {
         @apply font-graphik text-neutral-900;
     }
+
+    *::-webkit-scrollbar {
+        width: 17px;
+    }
+
+    *::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: #00000032;
+        border: 5px solid transparent;
+        background-clip: padding-box;
+        border-radius: 100px;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+        background-color: #00000050;
+    }
 }
 </style>
