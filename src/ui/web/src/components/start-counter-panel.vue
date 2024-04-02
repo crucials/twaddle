@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
 import SelectInput from '@/components/ui/select-input.vue'
 import FilledButton from '@/components/ui/filled-button.vue'
+import RecordingPanel from '@/components/recording-panel.vue'
+import CustomTable from '@/components/custom-table.vue'
+
+import { computed, reactive, ref } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications'
 import { supportedLanguages } from '@/supported-languages.ts'
 import { EelResponse } from '@/types/eel-response'
@@ -22,7 +25,23 @@ const language = ref('en')
 const countingProcess = reactive<{
     secondsRunning?: number
     result?: Record<string, number>
-}>({})
+}>({
+    secondsRunning: 0,
+    result: {
+        's': 1,
+        'thyropantographorytosis': 43,
+        'dasd': 4,
+        's1': 1,
+        'thyropantographorytosis4': 43,
+        'dasd2': 4,
+        's2': 1,
+        'thyropantographorytosis14': 43,
+        'dasd525': 4,
+        's13': 1,
+        'thyropantographorytosis5': 43,
+        'dasd6': 4,
+    }
+})
 
 let secondsCountingIntervalId: number | undefined = undefined
 const timer = computed(() => {
@@ -93,6 +112,18 @@ async function updateResult() {
 </script>
 
 <template>
+    <!-- <form
+        v-if="countingProcess.secondsRunning === undefined"
+        class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
+            flex items-start gap-x-14 gap-y-8 min-h-72 sm:flex-wrap-reverse mb-10"
+        @submit.prevent="start"
+    >
+        <CustomTable
+            class="w-full"
+            :items="[1, 2, 3, 4].map(number => ({ id: number, username: `user${number}` }))"
+        />
+    </form> -->
+
     <form
         v-if="countingProcess.secondsRunning === undefined"
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
@@ -141,18 +172,10 @@ async function updateResult() {
         </div>
     </form>
 
-    <div
+    <RecordingPanel
         v-else
-        class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7 min-h-72"
-    >
-        <time :datetime="timer" class="block text-neutral-400 font-medium text-5xl mb-6">
-            {{ timer }}
-        </time>
-
-        <FilledButton @click="reset">
-            reset
-        </FilledButton>
-
-        {{ countingProcess.result }}
-    </div>
+        :seconds-passed="countingProcess.secondsRunning"
+        :words-count-values="countingProcess.result || {}"
+        @reset="reset"
+    />
 </template>
