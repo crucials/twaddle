@@ -8,6 +8,7 @@ import { computed, reactive, ref } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications'
 import { supportedLanguages } from '@/supported-languages.ts'
 import { EelResponse } from '@/types/eel-response'
+import { SpokenWordStats } from '@/types/spoken-word-stats'
 
 const { showNotification } = useNotificationsStore()
 
@@ -24,23 +25,13 @@ const language = ref('en')
 
 const countingProcess = reactive<{
     secondsRunning?: number
-    result?: Record<string, number>
+    result?: SpokenWordStats[]
 }>({
     secondsRunning: 0,
-    result: {
-        's': 1,
-        'thyropantographorytosis': 43,
-        'dasd': 4,
-        's1': 1,
-        'thyropantographorytosis4': 43,
-        'dasd2': 4,
-        's2': 1,
-        'thyropantographorytosis14': 43,
-        'dasd525': 4,
-        's13': 1,
-        'thyropantographorytosis5': 43,
-        'dasd6': 4,
-    }
+    result: Array(100).fill({
+        word: 'fasdfsdf',
+        count: 3
+    })
 })
 
 let secondsCountingIntervalId: number | undefined = undefined
@@ -86,7 +77,7 @@ async function start() {
 async function reset() {
     window.clearInterval(secondsCountingIntervalId)
 
-    const response: EelResponse<Record<string, number>> = await eel.resetCounter()()
+    const response: EelResponse<SpokenWordStats[]> = await eel.resetCounter()()
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })
@@ -98,16 +89,14 @@ async function reset() {
 }
 
 async function updateResult() {
-    const response: EelResponse<Record<string, number>> = await eel.getCounterResult()()
-    console.log(response)
-    
+    const response: EelResponse<SpokenWordStats[]> = await eel.getCounterResult()()
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })
         return
     }
 
-    countingProcess.result = response.data || {}
+    countingProcess.result = response.data || []
 }
 </script>
 
@@ -175,7 +164,7 @@ async function updateResult() {
     <RecordingPanel
         v-else
         :seconds-passed="countingProcess.secondsRunning"
-        :words-count-values="countingProcess.result || {}"
+        :spoken-word-stats="countingProcess.result || []"
         @reset="reset"
     />
 </template>

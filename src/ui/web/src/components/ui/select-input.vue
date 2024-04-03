@@ -48,7 +48,7 @@ onKeyStroke('Escape', () => {
             class="bg-white border border-neutral-300 rounded-lg
                 px-6 py-3.5 sm:px-4 sm:py-3
                 transition-colors hover:border-neutral-400
-                flex items-center gap-x-3.5 outline-neutral-600 w-full z-20"
+                flex items-center gap-x-3.5 outline-neutral-500 w-full z-20"
             @click="listOpened = !listOpened"
             :aria-expanded="listOpened"
             tabindex="0"

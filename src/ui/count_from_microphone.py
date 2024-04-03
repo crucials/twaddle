@@ -36,7 +36,11 @@ def get_counter_result():
                                                    'words counting process ' +
                                                    'was not started'))
     
-    return create_successful_response(counter.words_count_values)
+    spoken_words_stats = [{'word': word,'count': counter.words_count_values[word]}
+                          for word
+                          in counter.words_count_values]
+    
+    return create_successful_response(spoken_words_stats)
 
 @eel.expose('resetCounter')
 def reset_counter():

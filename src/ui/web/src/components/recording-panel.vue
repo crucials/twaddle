@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import FilledButton from '@/components/ui/filled-button.vue'
 import CustomTable from '@/components/custom-table.vue'
+import TextInput from '@/components/ui/text-input.vue'
+
 import { ref, computed, reactive } from 'vue'
-import TextInput from '@/components/ui/text-input.vue';
+import { SpokenWordStats } from '@/types/spoken-word-stats'
 
 const props = defineProps<{
     secondsPassed: number
-    wordsCountValues: Record<string, number>
+    spokenWordStats: SpokenWordStats[]
 }>()
 const emit = defineEmits<{
     (event: 'reset'): void
@@ -34,20 +36,15 @@ const timer = computed(() => {
 
 const resultViewOptions = reactive({
     searchText: '',
-    tableExpanded: false,
+    tableExpanded: false
 })
 
 const result = computed(() => {
-    const wordCountValues = Object.keys(props.wordsCountValues).map(word => ({
-        word: word,
-        count: props.wordsCountValues[word]
-    }))
-
     if(resultViewOptions.tableExpanded) {
-        return wordCountValues
+        return props.spokenWordStats
     }
     else {
-        return wordCountValues.slice(0, 10)
+        return props.spokenWordStats.slice(0, 12)
     }
 })
 </script>
@@ -71,20 +68,44 @@ const result = computed(() => {
                 result
             </h2>
 
-            <form class="flex items-center gap-7 mb-8">
+            <form class="flex items-center gap-7 mb-6">
                 <TextInput
                     v-model="resultViewOptions.searchText" 
                     placeholder="search word"
                 />
             </form>
 
+            <button
+                v-if="resultViewOptions.tableExpanded"
+                class="transition-colors duration-200 font-medium text-lg
+                    p-2 rounded-md hover:bg-neutral-200 
+                    flex items-center gap-x-2 mb-4"
+                @click="resultViewOptions.tableExpanded = false"
+            >
+                <svg class="w-6 rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 18L12 12L6 18" class="stroke-neutral-800" stroke-width="2"/>
+                    <path d="M18 12L12 6L6 12" class="stroke-neutral-800" stroke-width="2"/>
+                </svg>
+                show less
+            </button>
+
             <CustomTable
                 :items="result"
                 class="w-1/2 mb-4"
             />
 
-            <button class="hover:text-neutral-700 font-medium" @click="resultViewOptions.tableExpanded = !resultViewOptions.tableExpanded">
-                expand
+            <button
+                v-if="!resultViewOptions.tableExpanded"
+                class="transition-colors duration-200 font-medium text-lg
+                    p-2 rounded-md hover:bg-neutral-200 
+                    flex items-center gap-x-2"
+                @click="resultViewOptions.tableExpanded = true"
+            >
+                <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 18L12 12L6 18" class="stroke-neutral-800" stroke-width="2"/>
+                    <path d="M18 12L12 6L6 12" class="stroke-neutral-800" stroke-width="2"/>
+                </svg>
+                show more
             </button>
         </section>
     </div>
