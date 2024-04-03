@@ -9,7 +9,7 @@ defineProps<{
         <thead>
             <tr>
                 <th
-                    v-for="heading in Object.keys(items[0])"
+                    v-for="heading in Object.keys(items[0] || {})"
                     :key="heading"
                     class="font-medium text-start bg-neutral-50 border-r border-b border-neutral-200 text-[15px] px-7 py-3.5 last:border-r-0"
                 >

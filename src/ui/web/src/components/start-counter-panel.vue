@@ -30,7 +30,7 @@ const countingProcess = reactive<{
     secondsRunning: 0,
     result: Array(100).fill({
         word: 'fasdfsdf',
-        count: 3
+        count: 343
     })
 })
 

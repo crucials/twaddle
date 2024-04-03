@@ -39,12 +39,13 @@ const resultViewOptions = reactive({
     tableExpanded: false
 })
 
+const SHRINKED_TABLE_ROWS = 12
 const result = computed(() => {
     if(resultViewOptions.tableExpanded) {
         return props.spokenWordStats
     }
     else {
-        return props.spokenWordStats.slice(0, 12)
+        return props.spokenWordStats.slice(0, SHRINKED_TABLE_ROWS)
     }
 })
 </script>
@@ -68,45 +69,52 @@ const result = computed(() => {
                 result
             </h2>
 
-            <form class="flex items-center gap-7 mb-6">
-                <TextInput
-                    v-model="resultViewOptions.searchText" 
-                    placeholder="search word"
+           <div v-if="result.length > 0">
+                <form class="flex items-center gap-7 mb-6">
+                    <TextInput
+                        v-model="resultViewOptions.searchText" 
+                        placeholder="search word"
+                    />
+                </form>
+
+                <button
+                    v-if="resultViewOptions.tableExpanded && spokenWordStats.length > SHRINKED_TABLE_ROWS"
+                    class="transition-colors duration-200 font-medium text-lg
+                        p-2 rounded-md hover:bg-neutral-200
+                        flex items-center gap-x-2 mb-4"
+                    @click="resultViewOptions.tableExpanded = false"
+                >
+                    <svg class="w-6 rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 18L12 12L6 18" class="stroke-neutral-800" stroke-width="2"/>
+                        <path d="M18 12L12 6L6 12" class="stroke-neutral-800" stroke-width="2"/>
+                    </svg>
+                    show less
+                </button>
+
+                <CustomTable
+                    :items="result"
+                    class="w-1/2 mb-4"
                 />
-            </form>
 
-            <button
-                v-if="resultViewOptions.tableExpanded"
-                class="transition-colors duration-200 font-medium text-lg
-                    p-2 rounded-md hover:bg-neutral-200 
-                    flex items-center gap-x-2 mb-4"
-                @click="resultViewOptions.tableExpanded = false"
-            >
-                <svg class="w-6 rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 18L12 12L6 18" class="stroke-neutral-800" stroke-width="2"/>
-                    <path d="M18 12L12 6L6 12" class="stroke-neutral-800" stroke-width="2"/>
-                </svg>
-                show less
-            </button>
+                <button
+                    v-if="!resultViewOptions.tableExpanded && spokenWordStats.length > SHRINKED_TABLE_ROWS"
+                    class="transition-colors duration-200 font-medium text-lg
+                        p-2 rounded-md hover:bg-neutral-200 
+                        flex items-center gap-x-2"
+                    @click="resultViewOptions.tableExpanded = true"
+                >
+                    <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 18L12 12L6 18" class="stroke-neutral-800" stroke-width="2"/>
+                        <path d="M18 12L12 6L6 12" class="stroke-neutral-800" stroke-width="2"/>
+                    </svg>
+                    show more
+                </button>
+           </div>
 
-            <CustomTable
-                :items="result"
-                class="w-1/2 mb-4"
-            />
-
-            <button
-                v-if="!resultViewOptions.tableExpanded"
-                class="transition-colors duration-200 font-medium text-lg
-                    p-2 rounded-md hover:bg-neutral-200 
-                    flex items-center gap-x-2"
-                @click="resultViewOptions.tableExpanded = true"
-            >
-                <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 18L12 12L6 18" class="stroke-neutral-800" stroke-width="2"/>
-                    <path d="M18 12L12 6L6 12" class="stroke-neutral-800" stroke-width="2"/>
-                </svg>
-                show more
-            </button>
+           <p v-else class="text-neutral-500">
+                words count table will appear here after ~10 seconds, when the first
+                transcription happens
+           </p>
         </section>
     </div>
 </template>
