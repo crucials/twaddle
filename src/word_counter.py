@@ -10,12 +10,14 @@ from typing import Literal, Optional
 import pyaudio
 import whisper
 
+from supported_languages import languages
 
-Language = Literal['ru', 'en']
 
 speech_transcriber: whisper.Whisper | None = None
 
 class WordCounter:
+    language = 'en'
+
     running = False
     __finished_last_transcribing = False
     
@@ -23,20 +25,23 @@ class WordCounter:
 
     words_count_values = {}
 
-    def __init__(self):
+    def __init__(self, language: str = 'en'):
         global speech_transcriber
+
+        if language not in languages:
+            raise ValueError('selected language is not supported')
+        self.language = language
 
         if not speech_transcriber:
             print('loading a transcribing model')
             speech_transcriber = whisper.load_model('small')
 
-    def __transcribe(self, audio_file_path: str,
-                 language: Language):
+    def __transcribe(self, audio_file_path: str):
             global speech_transcriber
 
             print('started transcribing')
-            response = speech_transcriber.transcribe(audio_file_path, language=language,
-                                                    condition_on_previous_text=True)
+            response = speech_transcriber.transcribe(audio_file_path, language=self.language,
+                                                     condition_on_previous_text=True)
             os.remove(audio_file_path)
 
             spoken_text = (
@@ -55,7 +60,7 @@ class WordCounter:
 
             return response
 
-    def start(self, language: Language):
+    def start(self):
         global speech_transcriber
 
         READ_CHUNK = 1024
@@ -87,7 +92,7 @@ class WordCounter:
                     fragment_file_stream.setframerate(SAMPLE_RATE)
                     fragment_file_stream.writeframes(b''.join(microphone_audio_frames))
                     
-                self.__transcribe(audio_fragment_path, language)
+                self.__transcribe(audio_fragment_path)
         finally:
             if microphone_stream:
                 microphone_stream.stop_stream()
@@ -115,77 +120,3 @@ class WordCounter:
                 break
             time.sleep(1)
             seconds_waited += 1
-
-# counter_running = False
-# words_count_values = {}
-
-# def __transcribe(speech_transcriber: whisper.Whisper, audio_file_path: str,
-#                  language: Language):
-#     global words_count_values
-
-#     print('started transcribing')
-#     response = speech_transcriber.transcribe(audio_file_path, language=language,
-#                                              condition_on_previous_text=True)
-#     os.remove(audio_file_path)
-
-#     spoken_text = (
-#         response['text'].translate(str.maketrans('', '', string.punctuation))
-#         .lower()
-#     )
-    
-#     for spoken_word in filter(lambda word: word.strip() != '', spoken_text.split(' ')):
-#         if spoken_word in words_count_values:
-#             words_count_values[spoken_word] += 1
-#         else:
-#             words_count_values[spoken_word] = 1
-
-#     return response
-
-# def start_counting(language: Language):
-#     global counter_running
-#     global words_count_values
-
-#     print('loading a transcribe model')
-#     speech_transcriber = whisper.load_model('small')
-
-#     READ_CHUNK = 1024
-#     SAMPLE_RATE = 44100
-#     AUDIO_FRAGMENT_SECONDS = 10
-
-#     audio = pyaudio.PyAudio()
-
-#     microphone_stream = None
-#     try:
-#         microphone_stream = audio.open(rate=SAMPLE_RATE, channels=2,
-#                                         format=pyaudio.paInt16, input=True, output=True)
-#         print('recording from mic started')
-
-#         counter_running = True
-#         while counter_running:
-#             print('recording fragment')
-#             microphone_audio_frames = []
-#             for chunk_number in range(0, int(SAMPLE_RATE / READ_CHUNK * AUDIO_FRAGMENT_SECONDS)):
-#                 if not counter_running:
-#                     break
-#                 microphone_audio_frames.append(microphone_stream.read(READ_CHUNK))
-            
-#             audio_fragment_path = './' + str(datetime.now().timestamp()) + '.wav'
-#             with wave.open(audio_fragment_path, 'wb') as fragment_file_stream:
-#                 fragment_file_stream.setnchannels(2)
-#                 fragment_file_stream.setsampwidth(pyaudio.get_sample_size(pyaudio.paInt16))
-#                 fragment_file_stream.setframerate(SAMPLE_RATE)
-#                 fragment_file_stream.writeframes(b''.join(microphone_audio_frames))
-                
-#             __transcribe(speech_transcriber, audio_fragment_path, language)
-#     finally:
-#         if microphone_stream:
-#             microphone_stream.stop_stream()
-#             microphone_stream.close()
-
-#         audio.terminate()
-
-#     return words_count_values
-
-# def stop_counting():
-#     global counter_running
-#     counter_running = False

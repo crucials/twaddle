@@ -27,39 +27,20 @@ const countingProcess = reactive<{
     secondsRunning?: number
     result?: SpokenWordStats[]
 }>({
-    secondsRunning: 0,
+    /* secondsRunning: 0,
     result: [...Array(100).fill({
         word: 'fasdfsdf',
         count: 343
     }), ...Array(2).fill({
         word: 'test',
         count: 1000
-    })]
+    })] */
 })
 
 let secondsCountingIntervalId: number | undefined = undefined
-const timer = computed(() => {
-    const date = new Date()
-    date.setHours(0, 0, 0, 0)
-    date.setMinutes(0)
-
-    date.setSeconds(countingProcess.secondsRunning || 0)
-
-    const hours = `${date.getHours()}`.padStart(2, '0')
-    const minutesAndSeconds = date.toLocaleTimeString(undefined, {
-        minute: '2-digit', second: '2-digit'
-    })
-
-    if(hours === '00') {
-        return minutesAndSeconds
-    }
-    else {
-        return hours + ':' + minutesAndSeconds
-    }
-})
 
 async function start() {
-    const response: EelResponse<null> = await eel.startCounterFromMicrophone()()
+    const response: EelResponse<null> = await eel.startCounterFromMicrophone(language.value)()
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })
@@ -104,18 +85,6 @@ async function updateResult() {
 </script>
 
 <template>
-    <!-- <form
-        v-if="countingProcess.secondsRunning === undefined"
-        class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7
-            flex items-start gap-x-14 gap-y-8 min-h-72 sm:flex-wrap-reverse mb-10"
-        @submit.prevent="start"
-    >
-        <CustomTable
-            class="w-full"
-            :items="[1, 2, 3, 4].map(number => ({ id: number, username: `user${number}` }))"
-        />
-    </form> -->
-
     <form
         v-if="countingProcess.secondsRunning === undefined"
         class="bg-neutral-100 rounded-lg max-w-[1080px] px-8 py-7

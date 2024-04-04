@@ -4,6 +4,7 @@ import eel
 
 from utils.create_path_from_executable import create_path_from_executable
 from ui.count_from_microphone import start_counter_from_microphone, reset_counter
+from ui.get_supported_languages import get_supported_languages
 
 
 eel.browsers.set_path('chrome', create_path_from_executable('..', 'bin', 'ungoogled-chromium_120.0.6099.109-1.1.AppImage'))
