@@ -28,10 +28,13 @@ const countingProcess = reactive<{
     result?: SpokenWordStats[]
 }>({
     secondsRunning: 0,
-    result: Array(100).fill({
+    result: [...Array(100).fill({
         word: 'fasdfsdf',
         count: 343
-    })
+    }), ...Array(2).fill({
+        word: 'test',
+        count: 1000
+    })]
 })
 
 let secondsCountingIntervalId: number | undefined = undefined

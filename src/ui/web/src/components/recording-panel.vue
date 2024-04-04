@@ -39,13 +39,23 @@ const resultViewOptions = reactive({
     tableExpanded: false
 })
 
+const filteredAndSortedResult = computed(() => {
+    const filteredResult = props.spokenWordStats.filter(stats => {
+        return stats.word.toUpperCase()
+            .includes(resultViewOptions.searchText.toUpperCase().trim())
+    })
+    filteredResult.sort((stats1, stats2) => stats2.count - stats1.count)
+
+    return filteredResult
+})
+
 const SHRINKED_TABLE_ROWS = 12
-const result = computed(() => {
+const shrinkedResult = computed(() => {
     if(resultViewOptions.tableExpanded) {
-        return props.spokenWordStats
+        return filteredAndSortedResult.value
     }
     else {
-        return props.spokenWordStats.slice(0, SHRINKED_TABLE_ROWS)
+        return filteredAndSortedResult.value.slice(0, SHRINKED_TABLE_ROWS)
     }
 })
 </script>
@@ -69,7 +79,7 @@ const result = computed(() => {
                 result
             </h2>
 
-           <div v-if="result.length > 0">
+           <div v-if="spokenWordStats.length > 0">
                 <form class="flex items-center gap-7 mb-6">
                     <TextInput
                         v-model="resultViewOptions.searchText" 
@@ -78,7 +88,8 @@ const result = computed(() => {
                 </form>
 
                 <button
-                    v-if="resultViewOptions.tableExpanded && spokenWordStats.length > SHRINKED_TABLE_ROWS"
+                    v-if="resultViewOptions.tableExpanded
+                        && filteredAndSortedResult.length > SHRINKED_TABLE_ROWS"
                     class="transition-colors duration-200 font-medium text-lg
                         p-2 rounded-md hover:bg-neutral-200
                         flex items-center gap-x-2 mb-4"
@@ -92,12 +103,13 @@ const result = computed(() => {
                 </button>
 
                 <CustomTable
-                    :items="result"
+                    :items="shrinkedResult"
                     class="w-1/2 mb-4"
                 />
 
                 <button
-                    v-if="!resultViewOptions.tableExpanded && spokenWordStats.length > SHRINKED_TABLE_ROWS"
+                    v-if="!resultViewOptions.tableExpanded
+                        && filteredAndSortedResult.length > SHRINKED_TABLE_ROWS"
                     class="transition-colors duration-200 font-medium text-lg
                         p-2 rounded-md hover:bg-neutral-200 
                         flex items-center gap-x-2"
