@@ -8,7 +8,7 @@ from ui.get_supported_languages import get_supported_languages
 
 
 def stop(route, websockets):
-    print('stopping counter...')
+    print('exiting')
     reset_counter()
 
     exit(0)

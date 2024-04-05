@@ -80,6 +80,10 @@ const shrinkedResult = computed(() => {
             </h2>
 
            <div v-if="spokenWordStats.length > 0">
+                <p class="text-neutral-500 mb-5">
+                    {{ spokenWordStats.length }} words
+                </p>
+
                 <form class="flex items-center gap-7 mb-6">
                     <TextInput
                         v-model="resultViewOptions.searchText" 
