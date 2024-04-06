@@ -3,7 +3,6 @@ import string
 import os
 import time
 from datetime import datetime
-from threading import Thread
 from types import SimpleNamespace
 from typing import Literal, Optional
 
@@ -64,6 +63,10 @@ class WordCounter:
             return spoken_text
 
     def start(self):
+        """
+        starts recording mic input, transcribes and counts words. blocks 
+        the current thread execution until the counter is stopped
+        """
         global speech_transcriber
 
         READ_CHUNK = 1024
