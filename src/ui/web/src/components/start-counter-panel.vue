@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import SelectInput from '@/components/ui/select-input.vue'
-import FilledButton from '@/components/ui/filled-button.vue'
 import RecordingPanel from '@/components/recording-panel.vue'
-import CustomTable from '@/components/custom-table.vue'
+import Spinner from '@/components/ui/spinner.vue'
 
 import { computed, reactive, ref } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications'
@@ -20,8 +19,13 @@ const wordLists = [
     label: label,
 }))
 
-const selectedWordList = ref('all')
-const language = ref('en')
+const counterForm = reactive({
+    data: {
+        selectedWordList: 'all',
+        language: 'en'
+    },
+    loading: false,
+})
 
 const countingProcess = reactive<{
     secondsRunning?: number
@@ -40,7 +44,13 @@ const countingProcess = reactive<{
 let secondsCountingIntervalId: number | undefined = undefined
 
 async function start() {
-    const response: EelResponse<null> = await eel.startCounterFromMicrophone(language.value)()
+    counterForm.loading = true
+
+    const response: EelResponse<null> = await eel.startCounterFromMicrophone(
+        counterForm.data.language
+    )()
+
+    counterForm.loading = false
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })
@@ -92,6 +102,7 @@ async function updateResult() {
         @submit.prevent="start"
     >
         <button
+            v-if="!counterForm.loading"
             class="w-28 h-28 bg-white shadow-black/20 shadow-2xl rounded-full
                 flex items-center justify-center flex-shrink-0
                 transition-transform duration-300 hover:scale-105"
@@ -106,6 +117,8 @@ async function updateResult() {
                     fill="#F75757" />
             </svg>
         </button>
+
+        <Spinner v-else />
         
         <div class="flex-grow flex items-start gap-x-8 sm:gap-x-4 gap-y-8 flex-wrap">
             <label class="flex-grow max-w-64 min-w-52">
@@ -114,7 +127,7 @@ async function updateResult() {
                 </div>
                 <SelectInput
                     :items="wordLists"
-                    v-model:selectedItemName="selectedWordList"
+                    v-model:selectedItemName="counterForm.data.selectedWordList"
                 />
             </label>
 
@@ -127,7 +140,7 @@ async function updateResult() {
                         name: languageCode, label: supportedLanguages[languageCode]
                     }))"
                     searchable
-                    v-model:selectedItemName="language"
+                    v-model:selectedItemName="counterForm.data.language"
                 />
             </label>
         </div>
