@@ -1,4 +1,4 @@
-import os
+import sys
 
 import eel
 
@@ -11,9 +11,11 @@ def stop(route, websockets):
     print('exiting')
     reset_counter()
 
-    exit(0)
+    sys.exit(0)
 
-eel.browsers.set_path('chrome', create_path_from_executable('..', 'bin', 'ungoogled-chromium_120.0.6099.109-1.1.AppImage'))
+print('launching')
+
+eel.browsers.set_path('chrome', create_path_from_executable('ui', 'bin', 'ungoogled-chromium_120.0.6099.109-1.1.AppImage'))
 
 eel.init('src/ui/web/dist')
 eel.start('index.html', mode = 'chrome', size = ( 1400, 750 ), close_callback=stop)

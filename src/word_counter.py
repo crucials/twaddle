@@ -8,12 +8,12 @@ from types import SimpleNamespace
 from typing import Literal, Optional
 
 import pyaudio
-import whisper
+from faster_whisper import WhisperModel
 
 from supported_languages import languages
 
 
-speech_transcriber: whisper.Whisper | None = None
+speech_transcriber: WhisperModel | None = None
 
 class WordCounter:
     language = 'en'
@@ -34,18 +34,21 @@ class WordCounter:
 
         if not speech_transcriber:
             print('loading a transcribing model')
-            speech_transcriber = whisper.load_model('small')
+            speech_transcriber = WhisperModel(model_size_or_path='small',
+                                              device='cuda',
+                                              compute_type='float16')
 
     def __transcribe(self, audio_file_path: str):
             global speech_transcriber
 
             print('started transcribing')
-            response = speech_transcriber.transcribe(audio_file_path, language=self.language,
+            segments, _ = speech_transcriber.transcribe(audio_file_path, language=self.language,
                                                      condition_on_previous_text=True)
             os.remove(audio_file_path)
 
+            raw_spoken_text = ' '.join([segment.text for segment in segments])
             spoken_text = (
-                response['text'].translate(str.maketrans('', '', string.punctuation))
+                raw_spoken_text.translate(str.maketrans('', '', string.punctuation))
                 .lower()
             )
             
@@ -58,7 +61,7 @@ class WordCounter:
             if not self.running:
                 self.__finished_last_transcribing = True
 
-            return response
+            return spoken_text
 
     def start(self):
         global speech_transcriber
