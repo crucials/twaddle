@@ -3,5 +3,5 @@ export interface EelResponse<TData> {
     error: {
         name: string
         explanation: string
-    }
+    } | null
 }
