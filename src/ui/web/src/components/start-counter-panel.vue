@@ -2,6 +2,7 @@
 import SelectInput from '@/components/ui/select-input.vue'
 import RecordingPanel from '@/components/recording-panel.vue'
 import Spinner from '@/components/ui/spinner.vue'
+import InputDeviceSelect from '@/components/input-device-select.vue'
 
 import { computed, reactive, ref } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications'
@@ -11,17 +12,9 @@ import { SpokenWordStats } from '@/types/spoken-word-stats'
 
 const { showNotification } = useNotificationsStore()
 
-const wordLists = [
-    'all', 'english swears', 'english parasitic words', 'russian swears',
-    'russian parasitic words'
-].map(label => ({
-    name: label, 
-    label: label,
-}))
-
 const counterForm = reactive({
     data: {
-        selectedWordList: 'all',
+        inputDeviceIndex: null,
         language: 'en'
     },
     loading: false,
@@ -121,15 +114,9 @@ async function updateResult() {
         <Spinner v-else />
         
         <div class="flex-grow flex items-start gap-x-8 sm:gap-x-4 gap-y-8 flex-wrap">
-            <label class="flex-grow max-w-64 min-w-52">
-                <div class="mb-1">
-                    words to count
-                </div>
-                <SelectInput
-                    :items="wordLists"
-                    v-model:selectedItemName="counterForm.data.selectedWordList"
-                />
-            </label>
+            <Suspense>
+                <InputDeviceSelect v-model="counterForm.data.inputDeviceIndex" />
+            </Suspense>
 
             <label class="flex-grow max-w-64 min-w-52">
                 <div class="mb-1">
@@ -143,6 +130,16 @@ async function updateResult() {
                     v-model:selectedItemName="counterForm.data.language"
                 />
             </label>
+
+            <!-- <label class="flex-grow max-w-64 min-w-52">
+                <div class="mb-1">
+                    words to count
+                </div>
+                <SelectInput
+                    :items="wordLists"
+                    v-model:selectedItemName="counterForm.data.selectedWordList"
+                />
+            </label> -->
         </div>
     </form>
 

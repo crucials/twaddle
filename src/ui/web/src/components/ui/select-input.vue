@@ -55,10 +55,11 @@ onKeyStroke('Escape', () => {
             aria-controls="selectItemList"
             aria-haspopup="listbox"
             type="button"
+            :title="selectedItem?.label"
         >
             <svg
                 :class="{
-                    'transition-transform duration-300': true,
+                    'transition-transform duration-300 flex-shrink-0': true,
                     'rotate-180': listOpened
                 }"
                 width="11"
@@ -68,10 +69,10 @@ onKeyStroke('Escape', () => {
                 <path d="M1 3L5.5 7L10 3" stroke="#7C7C7C" stroke-width="2" stroke-linecap="round"/>
             </svg>
 
-            <span v-if="selectedItem" class="text-base text-neutral-800">
+            <span v-if="selectedItem" class="text-base text-neutral-800 line-clamp-1">
                 {{ selectedItem.label }}
             </span>
-            <span v-else class="text-neutral-500">
+            <span v-else class="text-neutral-500 line-clamp-1">
                 {{ placeholder }}
             </span>
         </button>
