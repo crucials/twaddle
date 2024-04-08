@@ -4,7 +4,7 @@ import eel
 
 from utils.create_path_from_executable import create_path_from_executable
 from ui.count_from_microphone import start_counter_from_microphone, reset_counter
-from ui.get_input_devices import get_input_devices
+from ui.get_recording_devices import get_recording_devices
 
 
 def stop(route, websockets):

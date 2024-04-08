@@ -20,10 +20,10 @@ const emit = defineEmits<{
 const { showNotification } = useNotificationsStore()
 
 const items = ref<SelectItem[]>([])
-await updateInputDevices()
+await updateDevices()
 
-async function updateInputDevices() {
-    const devicesResponse: EelResponse<AudioDevice[]> = await eel.getInputDevices()()
+async function updateDevices() {
+    const devicesResponse: EelResponse<AudioDevice[]> = await eel.getRecordingDevices()()
     
     if(devicesResponse.error || !devicesResponse.data) {
         const errorNotificationText = devicesResponse.error ?
@@ -41,20 +41,16 @@ async function updateInputDevices() {
     items.value = devicesResponse.data.map(device => {
         return { label: device.name, name: `${device.index}` }
     })
-
-    if(props.modelValue === null && items.value.length > 0) {
-        emit('update:modelValue', items.value[0].name)
-    }
 }
 </script>
 
 <template>
     <label class="flex-grow max-w-64 min-w-52">
         <div class="mb-1">
-            input device
+            recording device
         </div>
         <SelectInput
-            placeholder="input device"
+            placeholder="default"
             :items="items"
             :selected-item-name="modelValue"
             @update:selectedItemName="(newValue: string) => emit('update:modelValue', newValue)"

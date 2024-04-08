@@ -2,7 +2,7 @@
 import SelectInput from '@/components/ui/select-input.vue'
 import RecordingPanel from '@/components/recording-panel.vue'
 import Spinner from '@/components/ui/spinner.vue'
-import InputDeviceSelect from '@/components/input-device-select.vue'
+import RecordingDeviceSelect from '@/components/recording-device-select.vue'
 
 import { computed, reactive, ref } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications'
@@ -115,7 +115,7 @@ async function updateResult() {
         
         <div class="flex-grow flex items-start gap-x-8 sm:gap-x-4 gap-y-8 flex-wrap">
             <Suspense>
-                <InputDeviceSelect v-model="counterForm.data.inputDeviceIndex" />
+                <RecordingDeviceSelect v-model="counterForm.data.inputDeviceIndex" />
             </Suspense>
 
             <label class="flex-grow max-w-64 min-w-52">

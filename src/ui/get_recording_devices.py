@@ -5,8 +5,8 @@ from ui.errors.unexpected_error import UnexpectedError
 from utils.responses import create_error_response, create_successful_response
 
 
-@eel.expose('getInputDevices')
-def get_input_devices():
+@eel.expose('getRecordingDevices')
+def get_recording_devices():
     input_devices = []
 
     audio = None
