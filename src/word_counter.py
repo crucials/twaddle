@@ -7,18 +7,18 @@ from types import SimpleNamespace
 from typing import Literal, Optional
 
 import pyaudio
-from faster_whisper import WhisperModel
+import whisper
 
 from supported_languages import languages
 
 
-speech_transcriber: WhisperModel | None = None
+speech_transcriber: whisper.Whisper | None = None
 
 class WordCounter:
     language = 'en'
 
     running = False
-    __finished_last_transcribing = False
+    __finished_last_transcribing = True
     
     error: Exception | None = None
 
@@ -33,23 +33,23 @@ class WordCounter:
 
         if not speech_transcriber:
             print('loading a transcribing model')
-            speech_transcriber = WhisperModel(model_size_or_path='small',
-                                              device='cuda',
-                                              compute_type='float16')
+            speech_transcriber = whisper.load_model('small')
 
     def __transcribe(self, audio_file_path: str):
             global speech_transcriber
 
-            print('started transcribing')
-            segments, _ = speech_transcriber.transcribe(audio_file_path, language=self.language,
-                                                     condition_on_previous_text=True)
-            os.remove(audio_file_path)
+            if not self.running:
+                self.__finished_last_transcribing = False
 
-            raw_spoken_text = ' '.join([segment.text for segment in segments])
+            print('started transcribing')
+
+            response = speech_transcriber.transcribe(audio_file_path, language=self.language,
+                                                     condition_on_previous_text=True)
             spoken_text = (
-                raw_spoken_text.translate(str.maketrans('', '', string.punctuation))
+                response['text'].translate(str.maketrans('', '', string.punctuation))
                 .lower()
             )
+            os.remove(audio_file_path)
             
             for spoken_word in filter(lambda word: word.strip() != '', spoken_text.split(' ')):
                 if spoken_word in self.words_count_values:
@@ -90,6 +90,9 @@ class WordCounter:
                     if not self.running:
                         break
                     microphone_audio_frames.append(microphone_stream.read(READ_CHUNK))
+
+                if not self.running:
+                    break
                 
                 audio_fragment_path = './' + str(datetime.now().timestamp()) + '.wav'
                 with wave.open(audio_fragment_path, 'wb') as fragment_file_stream:
