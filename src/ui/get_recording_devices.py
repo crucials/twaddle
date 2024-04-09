@@ -15,7 +15,7 @@ def get_recording_devices():
         for device_index in range(audio.get_device_count()):
             device = audio.get_device_info_by_index(device_index)
 
-            if device['maxInputChannels'] > 0:
+            if device['maxInputChannels'] > 1:
                 input_devices.append(device)
     except Exception as error:
         return create_error_response(UnexpectedError(error))
