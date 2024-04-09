@@ -40,7 +40,9 @@ async function start() {
     counterForm.loading = true
 
     const response: EelResponse<null> = await eel.startCounterFromMicrophone(
-        counterForm.data.language
+        counterForm.data.language,
+        counterForm.data.inputDeviceIndex !== null ?
+            +counterForm.data.inputDeviceIndex : null
     )()
 
     counterForm.loading = false

@@ -16,6 +16,7 @@ speech_transcriber: whisper.Whisper | None = None
 
 class WordCounter:
     language = 'en'
+    recording_device_index = None
 
     running = False
     __finished_last_transcribing = True
@@ -24,12 +25,15 @@ class WordCounter:
 
     words_count_values = {}
 
-    def __init__(self, language: str = 'en'):
+    def __init__(self, language: str = 'en',
+                 recording_device_index: int | None = None):
         global speech_transcriber
 
         if language not in languages:
             raise ValueError('selected language is not supported')
         self.language = language
+
+        self.recording_device_index = recording_device_index
 
         if not speech_transcriber:
             print('loading a transcribing model')
@@ -77,9 +81,13 @@ class WordCounter:
 
         microphone_stream = None
         try:
-            microphone_stream = audio.open(rate=SAMPLE_RATE, channels=2,
-                                            format=pyaudio.paInt16, input=True, output=True)
-            print('recording from mic started')
+            microphone_stream = audio.open(rate=SAMPLE_RATE,
+                                           channels=2,
+                                           format=pyaudio.paInt16,
+                                           input=True,
+                                           input_device_index=self.recording_device_index,
+                                           output=True)
+            print(f'recording from mic ({self.recording_device_index}) started')
 
             self.running = True
             while self.running:
@@ -103,6 +111,7 @@ class WordCounter:
                     
                 self.__transcribe(audio_fragment_path)
         finally:
+            print('closing mic stream')
             if microphone_stream:
                 microphone_stream.stop_stream()
                 microphone_stream.close()

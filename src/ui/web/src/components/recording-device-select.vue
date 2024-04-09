@@ -10,7 +10,7 @@ interface AudioDevice {
     index: number
 }
 
-const props = defineProps<{
+defineProps<{
     modelValue: string | null
 }>()
 const emit = defineEmits<{

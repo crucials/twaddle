@@ -11,7 +11,8 @@ from ui.errors.unexpected_error import UnexpectedError
 counter: WordCounter | None = None
 
 @eel.expose('startCounterFromMicrophone')
-def start_counter_from_microphone(language: str):
+def start_counter_from_microphone(language: str,
+                                  recording_device_index: int | None = None):
     global counter
 
     if counter and counter.running or counter and not speech_transcriber:
@@ -20,7 +21,7 @@ def start_counter_from_microphone(language: str):
                                                    'was already started'))
     
     try:
-        counter = WordCounter(language)
+        counter = WordCounter(language, recording_device_index)
         counting_thread = Thread(target=counter.start)
         counting_thread.start()
 
