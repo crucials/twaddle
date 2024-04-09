@@ -36,6 +36,7 @@ class WordCounter:
 
     def __transcribe(self, audio_file_path: str):
             global speech_transcriber
+            punctuation = r"""!"#$%&'()*+,./:;<=>?@[\]^_`{|}~"""
 
             if not self.running:
                 self.__finished_last_transcribing = False
@@ -45,7 +46,7 @@ class WordCounter:
             response = speech_transcriber.transcribe(audio_file_path, language=self.language,
                                                      condition_on_previous_text=True)
             spoken_text = (
-                response['text'].translate(str.maketrans('', '', string.punctuation))
+                response['text'].translate(str.maketrans('', '', punctuation))
                 .lower()
             )
             os.remove(audio_file_path)
