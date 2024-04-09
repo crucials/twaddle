@@ -15,25 +15,20 @@ from supported_languages import languages
 speech_transcriber: whisper.Whisper | None = None
 
 class WordCounter:
-    language = 'en'
-    recording_device_index = None
-
-    running = False
-    __finished_last_transcribing = True
-    
-    error: Exception | None = None
-
-    words_count_values = {}
-
     def __init__(self, language: str = 'en',
                  recording_device_index: int | None = None):
         global speech_transcriber
-
+        
         if language not in languages:
             raise ValueError('selected language is not supported')
         self.language = language
 
         self.recording_device_index = recording_device_index
+
+        self.running = False
+        self.__finished_last_transcribing = True
+
+        self.words_count_values = {}
 
         if not speech_transcriber:
             print('loading a transcribing model')
