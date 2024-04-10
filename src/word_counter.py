@@ -1,10 +1,9 @@
 import wave
-import string
 import os
 import time
 from datetime import datetime
-from types import SimpleNamespace
-from typing import Literal, Optional
+from typing import Optional
+import faulthandler
 
 import pyaudio
 import whisper
@@ -73,10 +72,11 @@ class WordCounter:
         SAMPLE_RATE = 44100
         AUDIO_FRAGMENT_SECONDS = 10
 
-        audio = pyaudio.PyAudio()
-
+        audio = None
         microphone_stream = None
         try:
+            faulthandler.enable()
+            audio = pyaudio.PyAudio()
             microphone_stream = audio.open(rate=SAMPLE_RATE,
                                            channels=2,
                                            format=pyaudio.paInt16,
@@ -93,7 +93,9 @@ class WordCounter:
                 for chunk_number in range(0, int(SAMPLE_RATE / READ_CHUNK * AUDIO_FRAGMENT_SECONDS)):
                     if not self.running:
                         break
-                    microphone_audio_frames.append(microphone_stream.read(READ_CHUNK))
+                    microphone_audio_frames.append(
+                        microphone_stream.read(READ_CHUNK, exception_on_overflow=False)
+                    )
 
                 if not self.running:
                     break
@@ -112,7 +114,9 @@ class WordCounter:
                 microphone_stream.stop_stream()
                 microphone_stream.close()
 
-            audio.terminate()
+            if audio:
+                print('terminate')
+                audio.terminate()
 
     def stop(self, seconds_timeout: Optional[int] = 5):
         """
