@@ -15,7 +15,15 @@ speech_transcriber: whisper.Whisper | None = None
 
 class WordCounter:
     def __init__(self, language: str = 'en',
-                 recording_device_index: int | None = None):
+                 recording_device_index: int | None = None,
+                 words_to_count: list[str] | None = None):
+        """
+        loads a whisper transcriber model, use `start` function to launch the counter
+        
+        ### Parameters
+        `words_to_count`: if value is not `None` (default), all words that are not
+        included in specified list will be ignored
+        """
         global speech_transcriber
         
         if language not in languages:
@@ -26,6 +34,11 @@ class WordCounter:
 
         self.running = False
         self.__finished_last_transcribing = True
+
+        if words_to_count:
+            self.words_to_count = [word.strip().casefold() for word in words_to_count]
+        else:
+            self.words_to_count = None
 
         self.words_count_values = {}
 
@@ -49,12 +62,16 @@ class WordCounter:
                 .lower()
             )
             os.remove(audio_file_path)
+
+            spoken_filtered_words = [word for word in spoken_text.split(' ')
+                                     if word.strip() != '' and word in self.words_to_count
+                                     or self.words_to_count == None]
             
-            for spoken_word in filter(lambda word: word.strip() != '', spoken_text.split(' ')):
-                if spoken_word in self.words_count_values:
-                    self.words_count_values[spoken_word] += 1
+            for word in spoken_filtered_words:
+                if word in self.words_count_values:
+                    self.words_count_values[word] += 1
                 else:
-                    self.words_count_values[spoken_word] = 1
+                    self.words_count_values[word] = 1
 
             if not self.running:
                 self.__finished_last_transcribing = True

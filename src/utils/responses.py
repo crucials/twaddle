@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from ui.errors.detailed_error import DetailedError
 
 
@@ -6,6 +8,6 @@ from ui.errors.detailed_error import DetailedError
 def create_error_response(error: DetailedError):
     return dict(error=vars(error), data=None)
 
-def create_successful_response(data = None):
+TData = TypeVar('TData', dict, list, None)
+def create_successful_response(data: TData = None):
     return dict(error=None, data=data)
-

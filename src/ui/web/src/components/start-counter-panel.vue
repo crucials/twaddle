@@ -9,13 +9,15 @@ import { useNotificationsStore } from '@/stores/notifications'
 import { supportedLanguages } from '@/supported-languages.ts'
 import { EelResponse } from '@/types/eel-response'
 import { SpokenWordStats } from '@/types/spoken-word-stats'
+import WordListSelect from './word-list-select.vue'
 
 const { showNotification } = useNotificationsStore()
 
 const counterForm = reactive({
     data: {
         inputDeviceIndex: null,
-        language: 'en'
+        wordListName: null,
+        language: 'en',
     },
     loading: false,
 })
@@ -39,10 +41,13 @@ let secondsCountingIntervalId: number | undefined = undefined
 async function start() {
     counterForm.loading = true
 
+    console.log(counterForm.data)
+
     const response: EelResponse<null> = await eel.startCounterFromMicrophone(
         counterForm.data.language,
         counterForm.data.inputDeviceIndex !== null ?
-            +counterForm.data.inputDeviceIndex : null
+            +counterForm.data.inputDeviceIndex : null,
+        counterForm.data.wordListName
     )()
 
     counterForm.loading = false
@@ -72,7 +77,7 @@ async function reset() {
         showNotification({ type: 'error', text: response.error.explanation })
         return
     }
-    
+
     countingProcess.secondsRunning = undefined
     countingProcess.result = undefined
 }
@@ -114,35 +119,31 @@ async function updateResult() {
         </button>
 
         <Spinner v-else />
-        
-        <div class="flex-grow flex items-start gap-x-8 sm:gap-x-4 gap-y-8 flex-wrap">
-            <Suspense>
-                <RecordingDeviceSelect v-model="counterForm.data.inputDeviceIndex" />
-            </Suspense>
 
-            <label class="flex-grow max-w-64 min-w-52">
-                <div class="mb-1">
-                    speech language
-                </div>
-                <SelectInput
-                    :items="Object.keys(supportedLanguages).map(languageCode => ({
-                        name: languageCode, label: supportedLanguages[languageCode]
-                    }))"
-                    searchable
-                    v-model:selectedItemName="counterForm.data.language"
+        <Suspense>
+            <div class="flex-grow flex items-start gap-x-8 sm:gap-x-4 gap-y-8 flex-wrap">
+                <RecordingDeviceSelect
+                    v-model:device-index="counterForm.data.inputDeviceIndex"
                 />
-            </label>
 
-            <!-- <label class="flex-grow max-w-64 min-w-52">
-                <div class="mb-1">
-                    words to count
-                </div>
-                <SelectInput
-                    :items="wordLists"
-                    v-model:selectedItemName="counterForm.data.selectedWordList"
+                <WordListSelect
+                    v-model:list-name="counterForm.data.wordListName"
                 />
-            </label> -->
-        </div>
+
+                <label class="flex-grow max-w-64 min-w-52">
+                    <div class="mb-1">
+                        speech language
+                    </div>
+                    <SelectInput
+                        :items="Object.keys(supportedLanguages).map(languageCode => ({
+                            name: languageCode, label: supportedLanguages[languageCode]
+                        }))"
+                        searchable
+                        v-model:selectedItemName="counterForm.data.language"
+                    />
+                </label>
+            </div>
+        </Suspense>
     </form>
 
     <RecordingPanel

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SelectInput from '@/components/ui/select-input.vue';
+import SelectInput from '@/components/ui/select-input.vue'
 import { useNotificationsStore } from '@/stores/notifications'
 import { ref } from 'vue'
 import { EelResponse } from '@/types/eel-response'
@@ -11,10 +11,10 @@ interface AudioDevice {
 }
 
 defineProps<{
-    modelValue: string | null
+    deviceIndex: string | null
 }>()
 const emit = defineEmits<{
-    (event: 'update:modelValue', newValue: string): void
+    (event: 'update:deviceIndex', newValue: string): void
 }>()
 
 const { showNotification } = useNotificationsStore()
@@ -52,8 +52,8 @@ async function updateDevices() {
         <SelectInput
             placeholder="default"
             :items="items"
-            :selected-item-name="modelValue"
-            @update:selectedItemName="(newValue: string) => emit('update:modelValue', newValue)"
+            :selected-item-name="deviceIndex"
+            @update:selectedItemName="(newIndex: string) => emit('update:deviceIndex', newIndex)"
         />
     </label>
 </template>
