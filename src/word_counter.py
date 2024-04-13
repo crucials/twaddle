@@ -63,9 +63,14 @@ class WordCounter:
             )
             os.remove(audio_file_path)
 
-            spoken_filtered_words = [word for word in spoken_text.split(' ')
-                                     if word.strip() != '' and word in self.words_to_count
-                                     or self.words_to_count == None]
+            words = spoken_text.split(' ')
+            spoken_filtered_words = []
+            if self.words_to_count:
+                spoken_filtered_words = [word for word in words
+                                         if word.strip() != ''
+                                         and word in self.words_to_count]
+            else:
+                spoken_filtered_words = [word for word in words if word.strip() != '']
             
             for word in spoken_filtered_words:
                 if word in self.words_count_values:
