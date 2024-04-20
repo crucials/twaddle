@@ -42,14 +42,26 @@ import Notifications from '@/components/notifications.vue'
 
 @font-face {
     font-family: 'Graphik';
-    src: url('@/assets/fonts/graphik-regular.woff2');
+    src: url('@/assets/fonts/graphik-light-web.woff2');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'Graphik';
+    src: url('@/assets/fonts/graphik-regular-web.woff2');
     font-weight: normal;
 }
 
 @font-face {
     font-family: 'Graphik';
-    src: url('@/assets/fonts/graphik-medium.woff2');
+    src: url('@/assets/fonts/graphik-medium-web.woff2');
     font-weight: 500;
+}
+
+@font-face {
+    font-family: 'Graphik';
+    src: url('@/assets/fonts/graphik-semibold-web.woff2');
+    font-weight: 600;
 }
 
 @layer base {
