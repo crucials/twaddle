@@ -11,7 +11,7 @@ from ui.word_lists.get_word_lists import get_word_lists
 
 counter: WordCounter | None = None
 
-def __get_word_list_words(word_list_name):
+def __get_words_from_word_list(word_list_name):
     if word_list_name == None:
         return None
     
@@ -36,7 +36,7 @@ def start_counter_from_microphone(language: str,
                                                    'was already started'))
     
     try:
-        words_to_count = __get_word_list_words(word_list_name)
+        words_to_count = __get_words_from_word_list(word_list_name)
         
         counter = WordCounter(language, recording_device_index, words_to_count)
         counting_thread = Thread(target=counter.start)
@@ -65,7 +65,10 @@ def get_counter_result():
                           for word
                           in counter.words_count_values]
     
-    return create_successful_response(spoken_words_stats)
+    return create_successful_response({
+        'full_text': counter.full_text,
+        'words_stats': spoken_words_stats
+    })
 
 @eel.expose('resetCounter')
 def reset_counter():
