@@ -2,6 +2,7 @@
 import FilledButton from '@/components/ui/filled-button.vue'
 import CustomTable from '@/components/custom-table.vue'
 import TextInput from '@/components/ui/text-input.vue'
+import SheetDialog from '@/components/ui/sheet-dialog.vue'
 
 import { ref, computed, reactive } from 'vue'
 import { SpokenWordStats } from '@/types/spoken-word-stats'
@@ -9,6 +10,7 @@ import { SpokenWordStats } from '@/types/spoken-word-stats'
 const props = defineProps<{
     secondsPassed: number
     spokenWordStats: SpokenWordStats[]
+    fullText: string
 }>()
 const emit = defineEmits<{
     (event: 'reset'): void
@@ -80,9 +82,21 @@ const shrinkedResult = computed(() => {
             </h2>
 
            <div v-if="spokenWordStats.length > 0">
-                <p class="text-neutral-500 mb-5">
-                    {{ spokenWordStats.length }} words
+                <p class="text-neutral-500 mb-3">
+                    {{ spokenWordStats.length }} words.
                 </p>
+
+                <SheetDialog heading="full text" trigger-button-container-class="mb-5">
+                    <template #triggerButton>
+                        <FilledButton>
+                            view full text
+                        </FilledButton>
+                    </template>
+
+                    <template #default>
+                        {{ fullText }}
+                    </template>
+                </SheetDialog>
 
                 <form class="flex items-center gap-7 mb-6">
                     <TextInput

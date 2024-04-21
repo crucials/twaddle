@@ -42,6 +42,8 @@ class WordCounter:
 
         self.words_count_values = {}
 
+        self.full_text = ''
+
         if not speech_transcriber:
             print('loading a transcribing model')
             speech_transcriber = whisper.load_model('small')
@@ -57,22 +59,27 @@ class WordCounter:
 
             response = speech_transcriber.transcribe(audio_file_path, language=self.language,
                                                      condition_on_previous_text=True)
+
+            self.full_text += ' ' + response['text']
+
             spoken_text = (
                 response['text'].translate(str.maketrans('', '', punctuation))
                 .lower()
             )
+            
             os.remove(audio_file_path)
 
             words = spoken_text.split(' ')
-            spoken_filtered_words = []
-            if self.words_to_count:
-                spoken_filtered_words = [word for word in words
-                                         if word.strip() != ''
-                                         and word in self.words_to_count]
-            else:
-                spoken_filtered_words = [word for word in words if word.strip() != '']
             
-            for word in spoken_filtered_words:
+            filtered_words = []
+            if self.words_to_count:
+                filtered_words = [word for word in words
+                                  if word.strip() != ''
+                                  and word in self.words_to_count]
+            else:
+                filtered_words = [word for word in words if word.strip() != '']
+            
+            for word in filtered_words:
                 if word in self.words_count_values:
                     self.words_count_values[word] += 1
                 else:

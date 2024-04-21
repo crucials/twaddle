@@ -10,6 +10,7 @@ import { supportedLanguages } from '@/supported-languages.ts'
 import { EelResponse } from '@/types/eel-response'
 import { SpokenWordStats } from '@/types/spoken-word-stats'
 import WordListSelect from './word-list-select.vue'
+import FilledButton from './ui/filled-button.vue'
 
 const { showNotification } = useNotificationsStore()
 
@@ -24,16 +25,23 @@ const counterForm = reactive({
 
 const countingProcess = reactive<{
     secondsRunning?: number
-    result?: SpokenWordStats[]
+    result?: {
+        wordsStats: SpokenWordStats[]
+        fullText: string
+    }
 }>({
     /* secondsRunning: 0,
-    result: [...Array(100).fill({
-        word: 'fasdfsdf',
-        count: 343
-    }), ...Array(2).fill({
-        word: 'test',
-        count: 1000
-    })] */
+    result: {
+        wordsStats: [...Array(100).fill({
+            word: 'fasdfsdf',
+            count: 343
+        }), ...Array(2).fill({
+            word: 'test',
+            count: 1000
+        })],
+        fullText: 'fasdfsdf fasdfsdf fasdfsdf: fasdfsdf fasdfsdf fasdfsdf - fasdfsdf, '
+            + 'fasdfsdf. fasdfsdffasdfsdf fasdfsdf'
+    } */
 })
 
 let secondsCountingIntervalId: number | undefined = undefined
@@ -83,14 +91,22 @@ async function reset() {
 }
 
 async function updateResult() {
-    const response: EelResponse<SpokenWordStats[]> = await eel.getCounterResult()()
+    const response: EelResponse<{
+        words_stats: SpokenWordStats[]
+        full_text: string
+    }> = await eel.getCounterResult()()
 
     if(response.error) {
         showNotification({ type: 'error', text: response.error.explanation })
         return
     }
 
-    countingProcess.result = response.data || []
+    if(response.data) {
+        countingProcess.result = {
+            wordsStats: response.data.words_stats,
+            fullText: response.data.full_text
+        }
+    }
 }
 </script>
 
@@ -149,7 +165,8 @@ async function updateResult() {
     <RecordingPanel
         v-else
         :seconds-passed="countingProcess.secondsRunning"
-        :spoken-word-stats="countingProcess.result || []"
+        :spoken-word-stats="countingProcess.result?.wordsStats || []"
+        :full-text="countingProcess.result?.fullText || ''"
         @reset="reset"
     />
 </template>
