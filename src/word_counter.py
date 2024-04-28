@@ -6,12 +6,12 @@ from typing import Optional
 import faulthandler
 
 import pyaudio
-import whisper
+from faster_whisper import WhisperModel
 
 from supported_languages import languages
 
 
-speech_transcriber: whisper.Whisper | None = None
+speech_transcriber: WhisperModel | None = None
 
 class WordCounter:
     def __init__(self, language: str = 'en',
@@ -46,7 +46,10 @@ class WordCounter:
 
         if not speech_transcriber:
             print('loading a transcribing model')
-            speech_transcriber = whisper.load_model('small')
+
+            speech_transcriber = WhisperModel(model_size_or_path='small',
+                                              device='cpu',
+                                              compute_type='int8')
 
     def __transcribe(self, audio_file_path: str):
             global speech_transcriber
@@ -57,19 +60,21 @@ class WordCounter:
 
             print('started transcribing')
 
-            response = speech_transcriber.transcribe(audio_file_path, language=self.language,
-                                                     condition_on_previous_text=True)
-
-            self.full_text += ' ' + response['text']
-
-            spoken_text = (
-                response['text'].translate(str.maketrans('', '', punctuation))
-                .lower()
+            segments_iterator, _ = speech_transcriber.transcribe(
+                audio_file_path, language=self.language, condition_on_previous_text=True
             )
+            spoken_text = ' '.join([segment.text for segment in segments_iterator])
+
+            self.full_text += ' ' + spoken_text
             
             os.remove(audio_file_path)
 
-            words = spoken_text.split(' ')
+            words = (
+                spoken_text
+                .translate(str.maketrans('', '', punctuation))
+                .lower()
+                .split(' ')
+            )
             
             filtered_words = []
             if self.words_to_count:
