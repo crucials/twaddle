@@ -1,4 +1,5 @@
 import sys
+import os
 import platform
 
 import eel
@@ -18,14 +19,14 @@ def stop(route, websockets):
 
 print('launching')
 
-operating_system = platform.system()
-if operating_system == 'Linux':
-    eel.browsers.set_path('chrome', create_path_from_executable('ui', 'bin', 'ungoogled-chromium.AppImage'))
-elif operating_system == 'Windows':
-    eel.browsers.set_path('chrome', create_path_from_executable('ui', 'bin','ungoogled-chromium.exe'))
-else:
-    raise Exception(f'your os is not supported ({operating_system}), ' +
-                    'this app is available only for linux and windows')
+try:
+    operating_system = platform.system()
+    if operating_system == 'Linux':
+        eel.browsers.set_path('chrome', create_path_from_executable('ui', 'bin', 'ungoogled-chromium.AppImage'))
+    elif operating_system == 'Windows':
+        eel.browsers.set_path('chrome', create_path_from_executable('ui', 'bin','ungoogled-chromium.exe'))
+except:
+    print('failed to load a built-in ungoogled chromium, using the default user browser')
 
 eel.init('src/ui/web/dist')
 eel.start('index.html', mode = 'chrome', size = ( 1400, 750 ), close_callback=stop)
