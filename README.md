@@ -1,8 +1,8 @@
-![two abstract waves, mediocre logo](https://github.com/crucials/spoken-words-counter/assets/83793845/da0404ed-95c0-4e48-b010-af665913d558)
-
 # spoken-words-counter
 
 transcribes speech from mic and calculates stats like total spoken words count and all frequencies for all words
+
+https://github.com/crucials/spoken-words-counter/assets/83793845/8fd060ca-c27a-4667-9792-ba437b26aab0
 
 ## installation
 
