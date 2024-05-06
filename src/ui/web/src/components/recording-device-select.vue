@@ -14,7 +14,7 @@ defineProps<{
     deviceIndex: string | null
 }>()
 const emit = defineEmits<{
-    (event: 'update:deviceIndex', newValue: string): void
+    (event: 'update:deviceIndex', newValue: string | null): void
 }>()
 
 const { showNotification } = useNotificationsStore()
@@ -53,7 +53,7 @@ async function updateDevices() {
             placeholder="default"
             :items="items"
             :selected-item-name="deviceIndex"
-            @update:selectedItemName="(newIndex: string) => emit('update:deviceIndex', newIndex)"
+            @update:selectedItemName="newIndex => emit('update:deviceIndex', newIndex)"
         />
     </label>
 </template>

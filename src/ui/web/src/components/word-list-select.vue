@@ -14,7 +14,7 @@ defineProps<{
     listName: string | null;
 }>()
 const emit = defineEmits<{
-    (event: 'update:listName', newName: string): void
+    (event: 'update:listName', newName: string | null): void
 }>()
 
 const { showNotification } = useNotificationsStore()
@@ -56,7 +56,7 @@ async function updateWordLists() {
             placeholder="all"
             :items="items"
             :selected-item-name="listName"
-            @update:selectedItemName="(newName: string) => emit('update:listName', newName)"
+            @update:selectedItemName="newName => emit('update:listName', newName)"
         />
     </label>
 </template>
