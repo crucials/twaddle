@@ -1,18 +1,20 @@
 <script setup lang="ts">
+import CrossIcon from '@/components/ui/icons/cross-icon.vue'
+import TextInput from '@/components/ui/text-input.vue'
 import type { SelectItem } from '@/types/select-item'
 import { computed, ref } from 'vue'
 import { onClickOutside, onKeyStroke } from '@vueuse/core'
-import TextInput from '@/components/ui/text-input.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     items: SelectItem[]
     selectedItemName: string | null
     placeholder?: string
     searchable?: boolean
-}>()
+    clearable?: boolean
+}>(), { clearable: true })
 
 const emit = defineEmits<{
-    (event: 'update:selectedItemName', newName: string): void
+    (event: 'update:selectedItemName', newName: string | null): void
 }>()
 
 const listOpened = ref(false)
@@ -69,12 +71,24 @@ onKeyStroke('Escape', () => {
                 <path d="M1 3L5.5 7L10 3" stroke="#7C7C7C" stroke-width="2" stroke-linecap="round"/>
             </svg>
 
-            <span v-if="selectedItem" class="text-base text-neutral-800 line-clamp-1">
+            <span
+                v-if="selectedItem"
+                class="text-base text-start text-neutral-800 line-clamp-1"
+            >
                 {{ selectedItem.label }}
             </span>
-            <span v-else class="text-neutral-500 line-clamp-1">
+            <span v-else class="text-neutral-500 text-start line-clamp-1">
                 {{ placeholder }}
             </span>
+
+            <button
+                v-if="selectedItem"
+                class="text-sm ml-auto transition-transform duration-300 hover:scale-110"
+                type="button"
+                @click="emit('update:selectedItemName', null)"
+            >
+                <CrossIcon/>
+            </button>
         </button>
 
         <Transition name="slide-down">
