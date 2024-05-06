@@ -160,6 +160,10 @@ async function updateResult() {
                         />
                     </label>
                 </div>
+
+                <template #fallback>
+                    <Spinner/>
+                </template>
             </Suspense>
         </div>
 
