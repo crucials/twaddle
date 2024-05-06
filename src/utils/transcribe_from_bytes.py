@@ -22,7 +22,7 @@ def transcribe_from_bytes(transcription_model: WhisperModel, audio_data: list[by
         fragment_file_stream.setframerate(audio_sample_rate)
         fragment_file_stream.writeframes(b''.join(audio_data))
 
-    try:  
+    try:
         segments_iterator, _ = transcription_model.transcribe(
             audio_file_path, language=language, condition_on_previous_text=True
         )

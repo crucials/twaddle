@@ -25,7 +25,7 @@ def __get_words_from_word_list(word_list_name):
     return found_word_lists[0].words
 
 @eel.expose('startCounterFromMicrophone')
-def start_counter_from_microphone(language: str,
+def start_counter_from_microphone(language: str | None = None,
                                   recording_device_index: int | None = None,
                                   word_list_name: str | None = None):
     global counter

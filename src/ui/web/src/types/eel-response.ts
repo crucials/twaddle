@@ -1,4 +1,4 @@
-export interface EelResponse<TData> {
+export interface EelResponse<TData = null> {
     data: TData | null
     error: {
         name: string

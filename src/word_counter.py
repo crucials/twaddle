@@ -15,7 +15,7 @@ from utils.transcribe_from_bytes import transcribe_from_bytes
 speech_transcriber: WhisperModel | None = None
 
 class WordCounter:
-    def __init__(self, language: str = 'en',
+    def __init__(self, language: str | None = None,
                  recording_device_index: int | None = None,
                  words_to_count: list[str] | None = None):
         """
@@ -27,7 +27,7 @@ class WordCounter:
         """
         global speech_transcriber
         
-        if language not in languages:
+        if language != None and language not in languages:
             raise ValueError('selected language is not supported')
         self.language = language
 

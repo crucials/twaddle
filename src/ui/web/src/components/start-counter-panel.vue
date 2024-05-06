@@ -18,7 +18,7 @@ const counterForm = reactive({
     data: {
         inputDeviceIndex: null,
         wordListName: null,
-        language: 'en',
+        language: null,
     },
     loading: false,
 })
@@ -51,7 +51,7 @@ async function start() {
 
     console.log(counterForm.data)
 
-    const response: EelResponse<null> = await eel.startCounterFromMicrophone(
+    const response: EelResponse = await eel.startCounterFromMicrophone(
         counterForm.data.language,
         counterForm.data.inputDeviceIndex !== null ?
             +counterForm.data.inputDeviceIndex : null,
@@ -155,6 +155,7 @@ async function updateResult() {
                                 name: languageCode, label: supportedLanguages[languageCode]
                             }))"
                             searchable
+                            placeholder="auto-detect"
                             v-model:selectedItemName="counterForm.data.language"
                         />
                     </label>
