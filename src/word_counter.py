@@ -9,6 +9,7 @@ import pyaudio
 from faster_whisper import WhisperModel
 
 from supported_languages import languages
+from utils.transcribe_from_bytes import transcribe_from_bytes
 
 
 speech_transcriber: WhisperModel | None = None
@@ -51,7 +52,8 @@ class WordCounter:
                                               device='cpu',
                                               compute_type='int8')
 
-    def __transcribe(self, audio_file_path: str):
+    def __count_stats_for_audio_fragment(self, audio_fragment_frames: list[bytes],
+                                         sample_rate: int):
             global speech_transcriber
             punctuation = r"""!"#$%&'()*+,./:;<=>?@[\]^_`{|}~"""
 
@@ -60,14 +62,10 @@ class WordCounter:
 
             print('started transcribing')
 
-            segments_iterator, _ = speech_transcriber.transcribe(
-                audio_file_path, language=self.language, condition_on_previous_text=True
-            )
-            spoken_text = ' '.join([segment.text for segment in segments_iterator])
+            spoken_text = transcribe_from_bytes(speech_transcriber, audio_fragment_frames,
+                                                sample_rate, self.language)
 
             self.full_text += ' ' + spoken_text
-            
-            os.remove(audio_file_path)
 
             words = (
                 spoken_text
@@ -133,15 +131,9 @@ class WordCounter:
 
                 if not self.running:
                     break
-                
-                audio_fragment_path = './' + str(datetime.now().timestamp()) + '.wav'
-                with wave.open(audio_fragment_path, 'wb') as fragment_file_stream:
-                    fragment_file_stream.setnchannels(2)
-                    fragment_file_stream.setsampwidth(pyaudio.get_sample_size(pyaudio.paInt16))
-                    fragment_file_stream.setframerate(SAMPLE_RATE)
-                    fragment_file_stream.writeframes(b''.join(microphone_audio_frames))
                     
-                self.__transcribe(audio_fragment_path)
+                self.__count_stats_for_audio_fragment(microphone_audio_frames,
+                                                      SAMPLE_RATE)
         finally:
             print('closing mic stream')
             if microphone_stream:
