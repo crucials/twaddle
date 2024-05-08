@@ -29,7 +29,7 @@ import Card from '@/components/ui/card.vue'
                 />
             </Card>
 
-            <!-- <Card
+            <Card
                 heading="transcribe from file"
                 tag="RouterLink"
                 to="/transcribe-from-file"
@@ -43,7 +43,7 @@ import Card from '@/components/ui/card.vue'
                     class="absolute -bottom-4 -left-4 w-44
                         transition-transform duration-300 group-hover:scale-110"
                 />
-            </Card> -->
+            </Card>
         </nav>
     </main>
 </template>

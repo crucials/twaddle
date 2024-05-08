@@ -44,7 +44,15 @@ const router = useRouter()
             </nav>
         </header>
 
-        <RouterView />
+        <main class="flex-grow p-6 pt-0">
+            <p class="text-lg font-normal max-w-[900px] mb-10">
+                this tool transcribes your speech and provides a list of
+                words that you said with the statistics like usage count.
+                needed words can be specified
+            </p>
+            
+            <RouterView />
+        </main>
     </div>
 
     <Notifications />

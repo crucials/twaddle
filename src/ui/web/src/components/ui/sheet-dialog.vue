@@ -4,6 +4,7 @@
  * into the `triggerButton` slot
 */
 
+import { onKeyStroke } from '@vueuse/core';
 import { computed, ref } from 'vue'
 
 const props = withDefaults(defineProps<{
@@ -35,6 +36,10 @@ function changeOpenedState(newValue: boolean) {
         emit('update:opened', newValue)
     }
 }
+
+onKeyStroke('Escape', () => {
+    changeOpenedState(false)
+})
 </script>
 
 <template>

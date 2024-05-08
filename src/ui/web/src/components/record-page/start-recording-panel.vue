@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import SelectInput from '@/components/ui/select-input.vue'
-import RecordingPanel from '@/components/recording-panel.vue'
+import RecordingPanel from '@/components/record-page/recording-panel.vue'
 import Spinner from '@/components/ui/spinner.vue'
-import RecordingDeviceSelect from '@/components/recording-device-select.vue'
+import RecordingDeviceSelect from '@/components/record-page/recording-device-select.vue'
+import WordListSelect from '@/components/word-list-select.vue'
 
 import { computed, reactive, ref } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications'
 import { supportedLanguages } from '@/supported-languages.ts'
 import { EelResponse } from '@/types/eel-response'
 import { SpokenWordStats } from '@/types/spoken-word-stats'
-import WordListSelect from './word-list-select.vue'
 import FilledButton from './ui/filled-button.vue'
 
 const { showNotification } = useNotificationsStore()
