@@ -2,12 +2,17 @@
 import { ref } from 'vue'
 import { useElementSize } from '@vueuse/core'
 
+defineProps<{
+    tag?: string
+}>()
+
 const buttonElement = ref<HTMLButtonElement>()
 const buttonSize = useElementSize(buttonElement, undefined, { box: 'border-box' })
 </script>
 
 <template>
-    <button
+    <Component
+        :is="tag || 'button'"
         ref="buttonElement"
         class="filled-button bg-neutral-800 rounded-lg px-9 py-2.5
             flex items-center gap-x-2 relative overflow-hidden"
@@ -18,7 +23,7 @@ const buttonSize = useElementSize(buttonElement, undefined, { box: 'border-box' 
         <span class="relative text-white">
             <slot></slot>
         </span>
-    </button>    
+    </Component>    
 </template>
 
 <style scoped>
