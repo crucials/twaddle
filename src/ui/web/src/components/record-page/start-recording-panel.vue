@@ -10,7 +10,7 @@ import { useNotificationsStore } from '@/stores/notifications'
 import { supportedLanguages } from '@/supported-languages.ts'
 import { EelResponse } from '@/types/eel-response'
 import { SpokenWordStats } from '@/types/spoken-word-stats'
-import FilledButton from './ui/filled-button.vue'
+import TranscriptionOptionsInputs from '../transcription-options-inputs.vue'
 
 const { showNotification } = useNotificationsStore()
 
@@ -142,23 +142,10 @@ async function updateResult() {
                         v-model:device-index="counterForm.data.inputDeviceIndex"
                     />
     
-                    <WordListSelect
-                        v-model:list-name="counterForm.data.wordListName"
+                    <TranscriptionOptionsInputs
+                        v-model:language="counterForm.data.language"
+                        v-model:word-list-name="counterForm.data.wordListName"
                     />
-    
-                    <label class="flex-grow max-w-64 min-w-52">
-                        <div class="mb-1">
-                            speech language
-                        </div>
-                        <SelectInput
-                            :items="Object.keys(supportedLanguages).map(languageCode => ({
-                                name: languageCode, label: supportedLanguages[languageCode]
-                            }))"
-                            searchable
-                            placeholder="auto-detect"
-                            v-model:selectedItemName="counterForm.data.language"
-                        />
-                    </label>
                 </div>
 
                 <template #fallback>
