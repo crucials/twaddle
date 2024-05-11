@@ -30,5 +30,5 @@ elif operating_system == 'Windows' and os.path.isfile(path_to_windows_chromium):
 else:
     print('failed to load a built-in ungoogled chromium, using the default chrome browser')
 
-eel.init('src/ui/web/dist')
+eel.init('src/ui/electron/dist')
 eel.start('index.html', mode = 'chrome', size = ( 1400, 750 ), close_callback=stop)
