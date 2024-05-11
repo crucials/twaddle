@@ -5,7 +5,7 @@ from typing import Optional
 import pyaudio
 from faster_whisper import WhisperModel
 
-from word_counter import WordCounter
+from word_counters import WordCounter
 
 
 class RealtimeWordCounter(WordCounter):

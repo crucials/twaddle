@@ -2,7 +2,7 @@ from threading import Thread
 
 import eel
 
-from realtime_word_counter import RealtimeWordCounter
+from word_counters.realtime_word_counter import RealtimeWordCounter
 from utils.responses import create_error_response, create_successful_response
 from ui.errors.detailed_error import DetailedError
 from ui.errors.unexpected_error import UnexpectedError
