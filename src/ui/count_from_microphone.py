@@ -2,14 +2,14 @@ from threading import Thread
 
 import eel
 
-from word_counter import WordCounter, speech_transcriber
+from realtime_word_counter import RealtimeWordCounter
 from utils.responses import create_error_response, create_successful_response
 from ui.errors.detailed_error import DetailedError
 from ui.errors.unexpected_error import UnexpectedError
 from ui.word_lists.get_word_lists import get_word_lists
 
 
-counter: WordCounter | None = None
+counter: RealtimeWordCounter | None = None
 
 def __get_words_from_word_list(word_list_name):
     if word_list_name == None:
@@ -30,7 +30,10 @@ def start_counter_from_microphone(language: str | None = None,
                                   word_list_name: str | None = None):
     global counter
 
-    if counter and counter.running or counter and not speech_transcriber:
+    # if counter initialized but the transcription model hasnt been loaded yet
+    loading = counter and not RealtimeWordCounter.speech_transcriber
+
+    if counter and counter.running or loading:
         return create_error_response(DetailedError('already-running-error',
                                                    'words counting process ' +
                                                    'was already started'))
@@ -38,8 +41,8 @@ def start_counter_from_microphone(language: str | None = None,
     try:
         words_to_count = __get_words_from_word_list(word_list_name)
         
-        counter = WordCounter(language, recording_device_index, words_to_count)
-        counting_thread = Thread(target=counter.start)
+        counter = RealtimeWordCounter(language, recording_device_index, words_to_count)
+        counting_thread = Thread(target=counter.start, args=[1])
         counting_thread.start()
 
         return create_successful_response(None)
