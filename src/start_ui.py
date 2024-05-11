@@ -1,34 +1,50 @@
-import sys
+import subprocess
 import os
-import platform
+import signal
+from threading import Thread
 
-import eel
-import eel.browsers
+from dotenv import load_dotenv
+import waitress
+from flask import Flask, jsonify
+import waitress.server
+from werkzeug.exceptions import HTTPException
 
 from utils.create_path_from_executable import create_path_from_executable
-from ui.count_from_microphone import start_counter_from_microphone, reset_counter
-from ui.get_recording_devices import get_recording_devices
-from ui.word_lists.get_word_lists import get_word_lists_for_ui
 
 
-def stop(route, websockets):
-    print('exiting')
-    reset_counter()
+load_dotenv()
 
-    sys.exit(0)
+app = Flask(__name__)
+app.url_map.strict_slashes = False
 
-print('launching')
+@app.errorhandler(HTTPException)
+def send_json_error_response(error: HTTPException):
+    return jsonify(error=error.code, explanation=error.description), error.code
 
-path_to_linux_chromium = create_path_from_executable('ui', 'bin', 'ungoogled-chromium.AppImage')
-path_to_windows_chromium = create_path_from_executable('ui', 'bin', 'ungoogled-chromium.exe')
+def exit_after_electron_stopped(electron_subprocess: subprocess.Popen):
+    electron_subprocess.wait()
+    os.kill(os.getpid(), signal.SIGINT)
 
-operating_system = platform.system()
-if operating_system == 'Linux' and os.path.isfile(path_to_linux_chromium):
-    eel.browsers.set_path('chrome', path_to_linux_chromium)
-elif operating_system == 'Windows' and os.path.isfile(path_to_windows_chromium):
-    eel.browsers.set_path('chrome', path_to_windows_chromium)
+if os.environ.get('MODE') == 'DEVELOPMENT':
+    print('launching electron in development mode, dont forget to install npm packages',
+          'in \'./src/ui/electron\' folder and build the vue frontend',
+          'with \'npm run build\'', '\n')
+    electron_subprocess = subprocess.Popen('cd ./src/ui/electron; npx electron .',
+                                           shell=True)
+    
+    Thread(target=exit_after_electron_stopped, args=[electron_subprocess]).start()
+
+    print('launching flask server', '\n')
+    app.run()
 else:
-    print('failed to load a built-in ungoogled chromium, using the default chrome browser')
+    print('launching electron in production mode, with bundled executable')
+    electron_executable_path = create_path_from_executable(
+        'ui', 'electron', 'dist', 'spoken-words-counter.AppImage'
+    )
+    electron_subprocess = subprocess.Popen([], executable=electron_executable_path,
+                                           shell=True)
 
-eel.init('src/ui/electron/dist')
-eel.start('index.html', mode = 'chrome', size = ( 1400, 750 ), close_callback=stop)
+    Thread(target=exit_after_electron_stopped, args=[electron_subprocess]).start()
+
+    print('launching flask server', '\n')
+    waitress.serve(app)

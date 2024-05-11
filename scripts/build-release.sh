@@ -1,4 +1,5 @@
-cd ./src/ui/web
+cd ./src/ui/electron
 npm run build
+npx electron-builder
 cd ../../../
-python -m eel ./src/start_ui.py ./src/ui/web -y --onefile --noconsole --log-level=DEBUG --add-data="./src/ui/bin/ungoogled-chromium.AppImage:./ui/bin" -n spoken-words-counter
+pyinstaller ./src/start_ui.py --add-data="./src/ui/electron/dist/spoken-words-counter.AppImage:./ui/electron/dist" -y --onefile --noconsole --log-level=DEBUG -n spoken-words-counter

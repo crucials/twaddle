@@ -1,6 +1,7 @@
 # project-specific
 src/ui/bin/ungoogled-chromium.AppImage
 src/ui/bin/ungoogled-chromium.exe
+vue-dist
 do.txt
 
 
