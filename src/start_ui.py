@@ -48,9 +48,9 @@ if os.environ.get('MODE') == 'DEVELOPMENT':
     print('launching flask server', '\n')
     app.run()
 else:
-    print('launching electron in production mode, with bundled executable')
+    print('launching electron in production mode, with bundled executable', '\n')
     electron_executable_path = create_path_from_executable(
-        'ui', 'electron', 'dist', 'spoken-words-counter.AppImage'
+        'ui', 'electron', 'bin', 'spoken-words-counter.AppImage'
     )
     electron_subprocess = subprocess.Popen([], executable=electron_executable_path,
                                            shell=True)
@@ -58,4 +58,4 @@ else:
     Thread(target=exit_after_electron_stopped, args=[electron_subprocess]).start()
 
     print('launching flask server', '\n')
-    waitress.serve(app)
+    waitress.serve(app, port=5000)

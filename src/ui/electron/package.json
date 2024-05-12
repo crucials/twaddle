@@ -39,6 +39,8 @@
     "linux": {
       "target": "AppIMage"
     },
-    "output": "bin"
+    "directories": {
+      "output": "bin"
+    }
   }
 }
