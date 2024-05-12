@@ -3,15 +3,14 @@ import SelectInput from '@/components/ui/select-input.vue'
 import RecordingPanel from '@/components/record-page/recording-panel.vue'
 import Spinner from '@/components/ui/spinner.vue'
 import RecordingDeviceSelect from '@/components/record-page/recording-device-select.vue'
-import WordListSelect from '@/components/word-list-select.vue'
-
-import { computed, reactive, ref } from 'vue'
-import { useNotificationsStore } from '@/stores/notifications'
-import { supportedLanguages } from '@/supported-languages.ts'
-import { SpokenWordStats } from '@/types/spoken-word-stats'
 import TranscriptionOptionsInputs from '../transcription-options-inputs.vue'
 
-const { showNotification } = useNotificationsStore()
+import { SpokenWordStats } from '@/types/spoken-word-stats'
+import { API_BASE_URL } from '@/api-url'
+import { useApi } from '@/composable/api'
+import { reactive } from 'vue'
+
+const { fetchWithErrorNotification } = useApi()
 
 const counterForm = reactive({
     data: {
@@ -46,69 +45,51 @@ const countingProcess = reactive<{
 let secondsCountingIntervalId: number | undefined = undefined
 
 async function start() {
-    // FLASK MIGRATION
-    // counterForm.loading = true
+    counterForm.loading = true
 
-    // console.log(counterForm.data)
+    const response = await fetchWithErrorNotification('/realtime-counter', {
+        method: 'POST'
+    })
 
-    // const response: EelResponse = await eel.startCounterFromMicrophone(
-    //     counterForm.data.language,
-    //     counterForm.data.inputDeviceIndex !== null ?
-    //         +counterForm.data.inputDeviceIndex : null,
-    //     counterForm.data.wordListName
-    // )()
+    counterForm.loading = false
 
-    // counterForm.loading = false
+    if(!response.error) {
+        countingProcess.secondsRunning = 0
 
-    // if(response.error) {
-    //     showNotification({ type: 'error', text: response.error.explanation })
-    //     return
-    // }
+        secondsCountingIntervalId = window.setInterval(() => {
+            if(countingProcess.secondsRunning !== undefined) {
+                countingProcess.secondsRunning += 1
+            }
 
-    // countingProcess.secondsRunning = 0
-
-    // secondsCountingIntervalId = window.setInterval(() => {
-    //     if(countingProcess.secondsRunning !== undefined) {
-    //         countingProcess.secondsRunning += 1
-    //     }
-
-    //     updateResult()
-    // }, 1000)
+            updateResult()
+        }, 1000)
+    }
 }
 
 async function reset() {
-    // FLASK MIGRATION
-    // window.clearInterval(secondsCountingIntervalId)
+    window.clearInterval(secondsCountingIntervalId)
 
-    // const response: EelResponse<SpokenWordStats[]> = await eel.resetCounter()()
+    const response = await fetchWithErrorNotification('/realtime-counter', {
+        method: 'DELETE'
+    })
 
-    // if(response.error) {
-    //     showNotification({ type: 'error', text: response.error.explanation })
-    //     return
-    // }
-
-    // countingProcess.secondsRunning = undefined
-    // countingProcess.result = undefined
+    if(!response.error) {
+        countingProcess.secondsRunning = undefined
+        countingProcess.result = undefined
+    }
 }
 
 async function updateResult() {
-    // FLASK MIGRATION
-    // const response: EelResponse<{
-    //     words_stats: SpokenWordStats[]
-    //     full_text: string
-    // }> = await eel.getCounterResult()()
+    const response = await fetchWithErrorNotification('/realtime-counter/result', {
+        method: 'GET'
+    })
 
-    // if(response.error) {
-    //     showNotification({ type: 'error', text: response.error.explanation })
-    //     return
-    // }
-
-    // if(response.data) {
-    //     countingProcess.result = {
-    //         wordsStats: response.data.words_stats,
-    //         fullText: response.data.full_text
-    //     }
-    // }
+    if(response.data) {
+        countingProcess.result = {
+            wordsStats: response.data.words_stats,
+            fullText: response.data.full_text
+        }
+    }
 }
 </script>
 

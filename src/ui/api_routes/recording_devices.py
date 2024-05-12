@@ -1,12 +1,13 @@
 import pyaudio
 import flask
-from werkzeug.exceptions import BadRequest
+
+from utils.api_responses import create_successful_response
 
 
-recording_devices = flask.Blueprint('recording-devices', __name__,
+recording_devices_blueprint = flask.Blueprint('recording-devices', __name__,
                                     url_prefix='/recording-devices')
 
-@recording_devices.get('/')
+@recording_devices_blueprint.get('/')
 def get_recording_devices():
     input_devices = []
 
@@ -22,4 +23,4 @@ def get_recording_devices():
         if audio:
             audio.terminate()
 
-    return input_devices
+    return create_successful_response(input_devices)

@@ -20,7 +20,13 @@ app.url_map.strict_slashes = False
 
 @app.errorhandler(HTTPException)
 def send_json_error_response(error: HTTPException):
-    return jsonify(error=error.code, explanation=error.description), error.code
+    return {
+        "error": {
+            "code": error.code,
+            "explanation": error.description
+        },
+        "data": None,
+    }, error.code
 
 for route_blueprint in routes:
     app.register_blueprint(route_blueprint)

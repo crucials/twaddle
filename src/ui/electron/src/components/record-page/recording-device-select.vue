@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import SelectInput from '@/components/ui/select-input.vue'
-import { useNotificationsStore } from '@/stores/notifications'
-import { ref } from 'vue'
 import { SelectItem } from '@/types/select-item'
-import { API_BASE_URL } from '@/api-url'
-import { ApiResponse } from '@/types/api-response'
+import { useApi } from '@/composable/api'
+import { ref } from 'vue'
 
 interface AudioDevice {
     name: string
@@ -18,26 +16,19 @@ const emit = defineEmits<{
     (event: 'update:deviceIndex', newValue: string | null): void
 }>()
 
-const { showNotification } = useNotificationsStore()
+const { fetchWithErrorNotification } = useApi()
 
 const items = ref<SelectItem[]>([])
 await updateDevices()
 
 async function updateDevices() {
-    const devicesResponse = await fetch(API_BASE_URL + '/recording-devices')
-    const devicesResponseData: ApiResponse<AudioDevice[]> = await devicesResponse.json()
+    const response = await fetchWithErrorNotification<AudioDevice[]>('/recording-devices')
 
-    if('error' in devicesResponseData) {
-        showNotification({
-            type: 'error',
-            text: 'failed to load recording devices: ' + devicesResponseData.explanation
+    if(response.data) {
+        items.value = response.data.map(device => {
+            return { label: device.name, name: `${device.index}` }
         })
-        return
     }
-
-    items.value = devicesResponseData.map(device => {
-        return { label: device.name, name: `${device.index}` }
-    })
 }
 </script>
 

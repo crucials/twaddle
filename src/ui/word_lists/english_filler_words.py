@@ -1,4 +1,4 @@
-from ui.word_lists import WordList
+from ui.word_lists.word_list import WordList
 
 
 english_filler_words = WordList('english filler words', None,
