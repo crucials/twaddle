@@ -26,10 +26,14 @@ def __get_words_from_word_list(word_list_name):
     return found_word_lists[0].words
 
 @realtime_counter_blueprint.post('/')
-def start_counter_from_microphone(language: str | None = None,
-                                  recording_device_index: int | None = None,
-                                  word_list_name: str | None = None):
+def start_counter_from_microphone():
     global counter
+
+    request_body = flask.request.get_json()
+    
+    if not isinstance(request_body, dict):
+        raise BadRequest('request body must be a json object with optional ' +
+                         'properties like \'language\'')
 
     # if counter initialized but the transcription model hasnt been loaded yet
     loading = counter and not RealtimeWordCounter.speech_transcriber
@@ -37,9 +41,11 @@ def start_counter_from_microphone(language: str | None = None,
     if counter and counter.running or loading:
         raise Conflict('words counting process was already started')
     try:
-        words_to_count = __get_words_from_word_list(word_list_name)
+        words_to_count = __get_words_from_word_list(request_body.get('word_list_name'))
         
-        counter = RealtimeWordCounter(language, recording_device_index, words_to_count)
+        counter = RealtimeWordCounter(request_body.get('language'),
+                                      request_body.get('recording_device_index'),
+                                      words_to_count)
         counting_thread = Thread(target=counter.start, args=[1])
         counting_thread.start()
     except ValueError:

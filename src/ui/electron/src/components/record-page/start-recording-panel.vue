@@ -48,7 +48,12 @@ async function start() {
     counterForm.loading = true
 
     const response = await fetchWithErrorNotification('/realtime-counter', {
-        method: 'POST'
+        method: 'POST',
+        body: JSON.stringify({
+            language: counterForm.data.language,
+            recording_device_index: counterForm.data.inputDeviceIndex,
+            word_list_name: counterForm.data.wordListName
+        })
     })
 
     counterForm.loading = false

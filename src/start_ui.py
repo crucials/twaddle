@@ -45,7 +45,7 @@ if os.environ.get('MODE') == 'DEVELOPMENT':
     
     Thread(target=exit_after_electron_stopped, args=[electron_subprocess]).start()
 
-    print('launching flask server', '\n')
+    print('launching dev flask server', '\n')
     app.run()
 else:
     print('launching electron in production mode, with bundled executable', '\n')
@@ -57,5 +57,5 @@ else:
 
     Thread(target=exit_after_electron_stopped, args=[electron_subprocess]).start()
 
-    print('launching flask server', '\n')
+    print('launching waitress server for flask api', '\n')
     waitress.serve(app, port=5000)
