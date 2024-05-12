@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import SelectInput from '@/components/ui/select-input.vue'
 import { useNotificationsStore } from '@/stores/notifications'
-import { EelResponse } from '@/types/eel-response';
 import { SelectItem } from '@/types/select-item'
 import { ref } from 'vue'
 
@@ -23,27 +22,28 @@ const items = ref<SelectItem[]>([])
 await updateWordLists()
 
 async function updateWordLists() {
-    const response: EelResponse<WordList[]> = await eel.getWordLists()()
-    console.log(response)
+    // FLASK MIGRATION
+    // const response: EelResponse<WordList[]> = await eel.getWordLists()()
+    // console.log(response)
 
-    if(response.error || !response.data) {
-        const errorNotificationText = response.error ?
-            'failed to load word lists: ' + response.error.explanation :
-            'failed to load word lists'
+    // if(response.error || !response.data) {
+    //     const errorNotificationText = response.error ?
+    //         'failed to load word lists: ' + response.error.explanation :
+    //         'failed to load word lists'
 
-        showNotification({
-            type: 'error',
-            text: errorNotificationText
-        })
+    //     showNotification({
+    //         type: 'error',
+    //         text: errorNotificationText
+    //     })
 
-        return
-    }
+    //     return
+    // }
 
-    items.value = response.data.map(wordList => {
-        return { label: wordList.name, name: wordList.name }
-    })
+    // items.value = response.data.map(wordList => {
+    //     return { label: wordList.name, name: wordList.name }
+    // })
 
-    console.log(items.value)
+    // console.log(items.value)
 }
 </script>
 

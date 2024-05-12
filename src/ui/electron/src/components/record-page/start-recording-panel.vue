@@ -8,7 +8,6 @@ import WordListSelect from '@/components/word-list-select.vue'
 import { computed, reactive, ref } from 'vue'
 import { useNotificationsStore } from '@/stores/notifications'
 import { supportedLanguages } from '@/supported-languages.ts'
-import { EelResponse } from '@/types/eel-response'
 import { SpokenWordStats } from '@/types/spoken-word-stats'
 import TranscriptionOptionsInputs from '../transcription-options-inputs.vue'
 
@@ -47,66 +46,69 @@ const countingProcess = reactive<{
 let secondsCountingIntervalId: number | undefined = undefined
 
 async function start() {
-    counterForm.loading = true
+    // FLASK MIGRATION
+    // counterForm.loading = true
 
-    console.log(counterForm.data)
+    // console.log(counterForm.data)
 
-    const response: EelResponse = await eel.startCounterFromMicrophone(
-        counterForm.data.language,
-        counterForm.data.inputDeviceIndex !== null ?
-            +counterForm.data.inputDeviceIndex : null,
-        counterForm.data.wordListName
-    )()
+    // const response: EelResponse = await eel.startCounterFromMicrophone(
+    //     counterForm.data.language,
+    //     counterForm.data.inputDeviceIndex !== null ?
+    //         +counterForm.data.inputDeviceIndex : null,
+    //     counterForm.data.wordListName
+    // )()
 
-    counterForm.loading = false
+    // counterForm.loading = false
 
-    if(response.error) {
-        showNotification({ type: 'error', text: response.error.explanation })
-        return
-    }
+    // if(response.error) {
+    //     showNotification({ type: 'error', text: response.error.explanation })
+    //     return
+    // }
 
-    countingProcess.secondsRunning = 0
+    // countingProcess.secondsRunning = 0
 
-    secondsCountingIntervalId = window.setInterval(() => {
-        if(countingProcess.secondsRunning !== undefined) {
-            countingProcess.secondsRunning += 1
-        }
+    // secondsCountingIntervalId = window.setInterval(() => {
+    //     if(countingProcess.secondsRunning !== undefined) {
+    //         countingProcess.secondsRunning += 1
+    //     }
 
-        updateResult()
-    }, 1000)
+    //     updateResult()
+    // }, 1000)
 }
 
 async function reset() {
-    window.clearInterval(secondsCountingIntervalId)
+    // FLASK MIGRATION
+    // window.clearInterval(secondsCountingIntervalId)
 
-    const response: EelResponse<SpokenWordStats[]> = await eel.resetCounter()()
+    // const response: EelResponse<SpokenWordStats[]> = await eel.resetCounter()()
 
-    if(response.error) {
-        showNotification({ type: 'error', text: response.error.explanation })
-        return
-    }
+    // if(response.error) {
+    //     showNotification({ type: 'error', text: response.error.explanation })
+    //     return
+    // }
 
-    countingProcess.secondsRunning = undefined
-    countingProcess.result = undefined
+    // countingProcess.secondsRunning = undefined
+    // countingProcess.result = undefined
 }
 
 async function updateResult() {
-    const response: EelResponse<{
-        words_stats: SpokenWordStats[]
-        full_text: string
-    }> = await eel.getCounterResult()()
+    // FLASK MIGRATION
+    // const response: EelResponse<{
+    //     words_stats: SpokenWordStats[]
+    //     full_text: string
+    // }> = await eel.getCounterResult()()
 
-    if(response.error) {
-        showNotification({ type: 'error', text: response.error.explanation })
-        return
-    }
+    // if(response.error) {
+    //     showNotification({ type: 'error', text: response.error.explanation })
+    //     return
+    // }
 
-    if(response.data) {
-        countingProcess.result = {
-            wordsStats: response.data.words_stats,
-            fullText: response.data.full_text
-        }
-    }
+    // if(response.data) {
+    //     countingProcess.result = {
+    //         wordsStats: response.data.words_stats,
+    //         fullText: response.data.full_text
+    //     }
+    // }
 }
 </script>
 

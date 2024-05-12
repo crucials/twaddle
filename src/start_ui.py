@@ -10,6 +10,7 @@ import waitress.server
 from werkzeug.exceptions import HTTPException
 
 from utils.create_path_from_executable import create_path_from_executable
+from ui.api_routes import routes
 
 
 load_dotenv()
@@ -21,6 +22,9 @@ app.url_map.strict_slashes = False
 def send_json_error_response(error: HTTPException):
     return jsonify(error=error.code, explanation=error.description), error.code
 
+for route_blueprint in routes:
+    app.register_blueprint(route_blueprint)
+
 def exit_after_electron_stopped(electron_subprocess: subprocess.Popen):
     electron_subprocess.wait()
     os.kill(os.getpid(), signal.SIGINT)
@@ -29,7 +33,8 @@ if os.environ.get('MODE') == 'DEVELOPMENT':
     print('launching electron in development mode, dont forget to install npm packages',
           'in \'./src/ui/electron\' folder and build the vue frontend',
           'with \'npm run build\'', '\n')
-    electron_subprocess = subprocess.Popen('cd ./src/ui/electron; npx electron .',
+    electron_subprocess = subprocess.Popen('cd ./src/ui/electron; npm run build; ' +
+                                           'npx electron .',
                                            shell=True)
     
     Thread(target=exit_after_electron_stopped, args=[electron_subprocess]).start()

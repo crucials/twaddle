@@ -6,11 +6,7 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    outDir: 'vue-dist',
-  },
-
-  base: path.resolve(__dirname, './vue-dist'),
+  base: '',
 
   plugins: [
     vue(),

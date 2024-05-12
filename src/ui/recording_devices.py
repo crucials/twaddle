@@ -1,11 +1,12 @@
 import pyaudio
-import eel
-
-from ui.errors.unexpected_error import UnexpectedError
-from utils.responses import create_error_response, create_successful_response
+import flask
+from werkzeug.exceptions import BadRequest
 
 
-@eel.expose('getRecordingDevices')
+recording_devices = flask.Blueprint('recording-devices', __name__,
+                                    url_prefix='/recording-devices')
+
+@recording_devices.get('/')
 def get_recording_devices():
     input_devices = []
 
@@ -17,10 +18,8 @@ def get_recording_devices():
 
             if device['maxInputChannels'] > 1:
                 input_devices.append(device)
-    except Exception as error:
-        return create_error_response(UnexpectedError(error))
     finally:
         if audio:
             audio.terminate()
 
-    return create_successful_response(input_devices)
+    return input_devices
