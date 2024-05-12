@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import SelectInput from '@/components/ui/select-input.vue'
-import { useNotificationsStore } from '@/stores/notifications'
-import { ref } from 'vue'
-import { EelResponse } from '@/types/eel-response'
 import { SelectItem } from '@/types/select-item'
+import { useApi } from '@/composable/api'
+import { ref } from 'vue'
 
 interface AudioDevice {
     name: string
@@ -17,30 +16,19 @@ const emit = defineEmits<{
     (event: 'update:deviceIndex', newValue: string | null): void
 }>()
 
-const { showNotification } = useNotificationsStore()
+const { fetchWithErrorNotification } = useApi()
 
 const items = ref<SelectItem[]>([])
 await updateDevices()
 
 async function updateDevices() {
-    const devicesResponse: EelResponse<AudioDevice[]> = await eel.getRecordingDevices()()
-    
-    if(devicesResponse.error || !devicesResponse.data) {
-        const errorNotificationText = devicesResponse.error ?
-            'failed to load input devices: ' + devicesResponse.error.explanation :
-            'failed to load input devices'
+    const response = await fetchWithErrorNotification<AudioDevice[]>('/recording-devices')
 
-        showNotification({
-            type: 'error',
-            text: errorNotificationText
+    if(response.data) {
+        items.value = response.data.map(device => {
+            return { label: device.name, name: `${device.index}` }
         })
-
-        return
     }
-
-    items.value = devicesResponse.data.map(device => {
-        return { label: device.name, name: `${device.index}` }
-    })
 }
 </script>
 

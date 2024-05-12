@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import SelectInput from '@/components/ui/select-input.vue'
-import { useNotificationsStore } from '@/stores/notifications'
-import { EelResponse } from '@/types/eel-response';
+import { useApi } from '@/composable/api';
 import { SelectItem } from '@/types/select-item'
 import { ref } from 'vue'
 
@@ -17,33 +16,19 @@ const emit = defineEmits<{
     (event: 'update:listName', newName: string | null): void
 }>()
 
-const { showNotification } = useNotificationsStore()
+const { fetchWithErrorNotification } = useApi()
 
 const items = ref<SelectItem[]>([])
 await updateWordLists()
 
 async function updateWordLists() {
-    const response: EelResponse<WordList[]> = await eel.getWordLists()()
-    console.log(response)
+    const response = await fetchWithErrorNotification<WordList[]>('/word-lists')
 
-    if(response.error || !response.data) {
-        const errorNotificationText = response.error ?
-            'failed to load word lists: ' + response.error.explanation :
-            'failed to load word lists'
-
-        showNotification({
-            type: 'error',
-            text: errorNotificationText
+    if(response.data) {
+        items.value = response.data.map(wordList => {
+            return { label: wordList.name, name: wordList.name }
         })
-
-        return
     }
-
-    items.value = response.data.map(wordList => {
-        return { label: wordList.name, name: wordList.name }
-    })
-
-    console.log(items.value)
 }
 </script>
 

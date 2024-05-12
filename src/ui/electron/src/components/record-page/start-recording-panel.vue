@@ -3,16 +3,14 @@ import SelectInput from '@/components/ui/select-input.vue'
 import RecordingPanel from '@/components/record-page/recording-panel.vue'
 import Spinner from '@/components/ui/spinner.vue'
 import RecordingDeviceSelect from '@/components/record-page/recording-device-select.vue'
-import WordListSelect from '@/components/word-list-select.vue'
+import TranscriptionOptionsInputs from '../transcription-options-inputs.vue'
 
-import { computed, reactive, ref } from 'vue'
-import { useNotificationsStore } from '@/stores/notifications'
-import { supportedLanguages } from '@/supported-languages.ts'
-import { EelResponse } from '@/types/eel-response'
 import { SpokenWordStats } from '@/types/spoken-word-stats'
-import FilledButton from './ui/filled-button.vue'
+import { API_BASE_URL } from '@/api-url'
+import { useApi } from '@/composable/api'
+import { reactive } from 'vue'
 
-const { showNotification } = useNotificationsStore()
+const { fetchWithErrorNotification } = useApi()
 
 const counterForm = reactive({
     data: {
@@ -49,57 +47,47 @@ let secondsCountingIntervalId: number | undefined = undefined
 async function start() {
     counterForm.loading = true
 
-    console.log(counterForm.data)
-
-    const response: EelResponse = await eel.startCounterFromMicrophone(
-        counterForm.data.language,
-        counterForm.data.inputDeviceIndex !== null ?
-            +counterForm.data.inputDeviceIndex : null,
-        counterForm.data.wordListName
-    )()
+    const response = await fetchWithErrorNotification('/realtime-counter', {
+        method: 'POST',
+        body: JSON.stringify({
+            language: counterForm.data.language,
+            recording_device_index: counterForm.data.inputDeviceIndex,
+            word_list_name: counterForm.data.wordListName
+        })
+    })
 
     counterForm.loading = false
 
-    if(response.error) {
-        showNotification({ type: 'error', text: response.error.explanation })
-        return
+    if(!response.error) {
+        countingProcess.secondsRunning = 0
+
+        secondsCountingIntervalId = window.setInterval(() => {
+            if(countingProcess.secondsRunning !== undefined) {
+                countingProcess.secondsRunning += 1
+            }
+
+            updateResult()
+        }, 1000)
     }
-
-    countingProcess.secondsRunning = 0
-
-    secondsCountingIntervalId = window.setInterval(() => {
-        if(countingProcess.secondsRunning !== undefined) {
-            countingProcess.secondsRunning += 1
-        }
-
-        updateResult()
-    }, 1000)
 }
 
 async function reset() {
     window.clearInterval(secondsCountingIntervalId)
 
-    const response: EelResponse<SpokenWordStats[]> = await eel.resetCounter()()
+    const response = await fetchWithErrorNotification('/realtime-counter', {
+        method: 'DELETE'
+    })
 
-    if(response.error) {
-        showNotification({ type: 'error', text: response.error.explanation })
-        return
+    if(!response.error) {
+        countingProcess.secondsRunning = undefined
+        countingProcess.result = undefined
     }
-
-    countingProcess.secondsRunning = undefined
-    countingProcess.result = undefined
 }
 
 async function updateResult() {
-    const response: EelResponse<{
-        words_stats: SpokenWordStats[]
-        full_text: string
-    }> = await eel.getCounterResult()()
-
-    if(response.error) {
-        showNotification({ type: 'error', text: response.error.explanation })
-        return
-    }
+    const response = await fetchWithErrorNotification('/realtime-counter/result', {
+        method: 'GET'
+    })
 
     if(response.data) {
         countingProcess.result = {
@@ -142,23 +130,10 @@ async function updateResult() {
                         v-model:device-index="counterForm.data.inputDeviceIndex"
                     />
     
-                    <WordListSelect
-                        v-model:list-name="counterForm.data.wordListName"
+                    <TranscriptionOptionsInputs
+                        v-model:language="counterForm.data.language"
+                        v-model:word-list-name="counterForm.data.wordListName"
                     />
-    
-                    <label class="flex-grow max-w-64 min-w-52">
-                        <div class="mb-1">
-                            speech language
-                        </div>
-                        <SelectInput
-                            :items="Object.keys(supportedLanguages).map(languageCode => ({
-                                name: languageCode, label: supportedLanguages[languageCode]
-                            }))"
-                            searchable
-                            placeholder="auto-detect"
-                            v-model:selectedItemName="counterForm.data.language"
-                        />
-                    </label>
                 </div>
 
                 <template #fallback>
