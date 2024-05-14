@@ -3,9 +3,9 @@ import faulthandler
 from typing import Optional
 
 import pyaudio
-from faster_whisper import WhisperModel
 
 from word_counters import WordCounter
+from utils.transcribe_from_audio_frames import transcribe_from_audio_frames
 
 
 class RealtimeWordCounter(WordCounter):
@@ -20,19 +20,25 @@ class RealtimeWordCounter(WordCounter):
         self.running = False
         self.__finished_last_transcribing = True
 
-    def _count_stats_for_audio_fragment(self,
+    def _count_stats_from_audio_fragment(self,
                                          audio_fragment_frames: list[bytes],
                                          sample_rate: int):
         if not self.running:
             self.__finished_last_transcribing = False
         
-        super()._count_stats_for_audio_fragment(audio_fragment_frames,
-                                                        sample_rate)
+        print('started transcribing')
+
+        spoken_text = transcribe_from_audio_frames(WordCounter.speech_transcriber, audio_fragment_frames,
+                                            sample_rate, self.language)
+        
+        print('finished transcription')
+
+        self._count_stats(spoken_text)
         
         if not self.running:
             self.__finished_last_transcribing = True
 
-    def start(self, length):
+    def start(self):
         """
         starts recording mic input, transcribes and counts words. blocks 
         the current thread execution until the counter is stopped
@@ -69,7 +75,7 @@ class RealtimeWordCounter(WordCounter):
                 if not self.running:
                     break
                     
-                self._count_stats_for_audio_fragment(microphone_audio_frames,
+                self._count_stats_from_audio_fragment(microphone_audio_frames,
                                                       SAMPLE_RATE)
         finally:
             print('closing mic stream')
@@ -78,7 +84,6 @@ class RealtimeWordCounter(WordCounter):
                 microphone_stream.close()
 
             if audio:
-                print('terminate')
                 audio.terminate()
 
     def stop(self, seconds_timeout: Optional[int] = 5):

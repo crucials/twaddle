@@ -7,7 +7,8 @@ export function useApi() {
 
     async function fetchWithErrorNotification<TData = any>(
         path: string,
-        options?: RequestInit
+        options?: RequestInit,
+        errorTextBeginning: string = 'error: ',
     ) {
         const response = await fetch(API_BASE_URL + path, {
             headers: {
@@ -21,7 +22,7 @@ export function useApi() {
         if(responseData.error) {
             showNotification({
                 type: 'error',
-                text: 'failed to load recording devices: ' + responseData.error.explanation
+                text: `${errorTextBeginning} '${responseData.error.explanation}'`
             })
         }
 

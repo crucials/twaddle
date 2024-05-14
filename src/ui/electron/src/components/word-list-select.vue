@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SelectInput from '@/components/ui/select-input.vue'
-import { useApi } from '@/composable/api';
+import { useApi } from '@/composables/api';
 import { SelectItem } from '@/types/select-item'
 import { ref } from 'vue'
 
@@ -22,7 +22,10 @@ const items = ref<SelectItem[]>([])
 await updateWordLists()
 
 async function updateWordLists() {
-    const response = await fetchWithErrorNotification<WordList[]>('/word-lists')
+    const response = await fetchWithErrorNotification<WordList[]>(
+        '/word-lists', {},
+        'error while loading word lists: '
+    )
 
     if(response.data) {
         items.value = response.data.map(wordList => {

@@ -4,6 +4,7 @@ import flask
 from werkzeug.exceptions import Conflict, BadRequest
 
 from word_counters.realtime_word_counter import RealtimeWordCounter
+from word_counters import WordCounter
 from ui.word_lists import get_word_lists
 from utils.api_responses import create_successful_response
 
@@ -36,7 +37,7 @@ def start_counter_from_microphone():
                          'properties like \'language\'')
 
     # if counter initialized but the transcription model hasnt been loaded yet
-    loading = counter and not RealtimeWordCounter.speech_transcriber
+    loading = counter and not WordCounter.speech_transcriber
 
     if counter and counter.running or loading:
         raise Conflict('words counting process was already started')
@@ -46,7 +47,7 @@ def start_counter_from_microphone():
         counter = RealtimeWordCounter(request_body.get('language'),
                                       request_body.get('recording_device_index'),
                                       words_to_count)
-        counting_thread = Thread(target=counter.start, args=[1])
+        counting_thread = Thread(target=counter.start)
         counting_thread.start()
     except ValueError:
         raise BadRequest('specified language is not supported')

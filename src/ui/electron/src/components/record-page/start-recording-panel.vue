@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import SelectInput from '@/components/ui/select-input.vue'
 import RecordingPanel from '@/components/record-page/recording-panel.vue'
 import Spinner from '@/components/ui/spinner.vue'
 import RecordingDeviceSelect from '@/components/record-page/recording-device-select.vue'
 import TranscriptionOptionsInputs from '../transcription-options-inputs.vue'
 
-import { SpokenWordStats } from '@/types/spoken-word-stats'
-import { API_BASE_URL } from '@/api-url'
-import { useApi } from '@/composable/api'
+import { SpokenTextStats } from '@/types/spoken-text-stats'
+import { useApi } from '@/composables/api'
 import { reactive } from 'vue'
 
 const { fetchWithErrorNotification } = useApi()
@@ -23,10 +21,7 @@ const counterForm = reactive({
 
 const countingProcess = reactive<{
     secondsRunning?: number
-    result?: {
-        wordsStats: SpokenWordStats[]
-        fullText: string
-    }
+    result?: SpokenTextStats
 }>({
     /* secondsRunning: 0,
     result: {
@@ -87,7 +82,7 @@ async function reset() {
 async function updateResult() {
     const response = await fetchWithErrorNotification('/realtime-counter/result', {
         method: 'GET'
-    })
+    }, 'error while updating words statistics: ')
 
     if(response.data) {
         countingProcess.result = {
@@ -151,8 +146,10 @@ async function updateResult() {
     <RecordingPanel
         v-else
         :seconds-passed="countingProcess.secondsRunning"
-        :spoken-word-stats="countingProcess.result?.wordsStats || []"
-        :full-text="countingProcess.result?.fullText || ''"
+        :result="{
+            fullText: countingProcess.result?.fullText || '',
+            wordsStats: countingProcess.result?.wordsStats || []
+        }"
         @reset="reset"
     />
 </template>

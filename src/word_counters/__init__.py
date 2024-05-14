@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from faster_whisper import WhisperModel
 
 from supported_languages import languages
-from utils.transcribe_from_bytes import transcribe_from_bytes
+from utils.transcribe_from_audio_frames import transcribe_from_audio_frames
 
 
 class WordCounter(ABC):
@@ -19,8 +19,6 @@ class WordCounter(ABC):
         `words_to_count`: if value is not `None` (default), all words that are not
         included in specified list will be ignored
         """
-
-        global speech_transcriber
 
         if language != None and language not in languages:
             raise ValueError('selected language is not supported')
@@ -38,19 +36,21 @@ class WordCounter(ABC):
         if not WordCounter.speech_transcriber:
             print('loading a transcribing model')
 
-            speech_transcriber = WhisperModel(model_size_or_path='small',
+            WordCounter.speech_transcriber = WhisperModel(model_size_or_path='small',
                                               device='cpu',
                                               compute_type='int8')
             
-    def _count_stats_for_audio_fragment(self, audio_fragment_frames: list[bytes],
-                                         sample_rate: int):
-        global speech_transcriber
+    # def _count_stats_from_audio_fragment(self, audio_fragment_frames: list[bytes],
+    #                                      sample_rate: int):
+    #     print('started transcribing')
+
+    #     spoken_text = transcribe_from_audio_frames(WordCounter.speech_transcriber, audio_fragment_frames,
+    #                                         sample_rate, self.language)
+
+    #     self._count_stats(spoken_text)
+
+    def _count_stats(self, spoken_text: str):
         punctuation = r"""!"#$%&'()*+,./:;<=>?@[\]^_`{|}~"""
-
-        print('started transcribing')
-
-        spoken_text = transcribe_from_bytes(speech_transcriber, audio_fragment_frames,
-                                            sample_rate, self.language)
 
         self.full_text += ' ' + spoken_text
 

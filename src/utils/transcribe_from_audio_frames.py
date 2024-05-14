@@ -6,8 +6,9 @@ from datetime import datetime
 import os
 
 
-def transcribe_from_bytes(transcription_model: WhisperModel, audio_data: list[bytes],
-                          audio_sample_rate: int, language: str | None):
+def transcribe_from_audio_frames(transcription_model: WhisperModel,
+                                 audio_data: list[bytes],
+                                 audio_sample_rate: int, language: str | None):
     """
     writes specified audio data to a file with unix timestamp as its name
     (like this: `1714995779.mp3`), then passes this filename to whisper model
