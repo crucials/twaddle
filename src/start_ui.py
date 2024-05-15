@@ -39,6 +39,7 @@ if os.environ.get('MODE') == 'DEVELOPMENT':
     print('launching electron in development mode, dont forget to install npm packages',
           'in \'./src/ui/electron\' folder and build the vue frontend',
           'with \'npm run build\'', '\n')
+    
     electron_subprocess = subprocess.Popen('cd ./src/ui/electron; npm run build; ' +
                                            'npx electron .',
                                            shell=True)
@@ -49,9 +50,11 @@ if os.environ.get('MODE') == 'DEVELOPMENT':
     app.run()
 else:
     print('launching electron in production mode, with bundled executable', '\n')
+
     electron_executable_path = create_path_from_executable(
         'ui', 'electron', 'bin', 'spoken-words-counter.AppImage'
     )
+
     electron_subprocess = subprocess.Popen([], executable=electron_executable_path,
                                            shell=True)
 
