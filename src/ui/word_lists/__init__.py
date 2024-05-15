@@ -1,18 +1,24 @@
-class WordList:
-    def __init__(self, name: str, path: str | None = None,
-                 words: list[str] | None = None, created_by_user = False):
-        """
-        ### Parameters
-        `path`: from where to load word list txt data (one word on one line format).
-        if it's specified, `words` parameter will be ignored
-        """
-        self.name = name
-        self.custom = created_by_user
+from ui.word_lists.english_filler_words import english_filler_words
+from ui.word_lists.spanish_filler_words import spanish_filler_words
 
-        if path:
-            with open(path) as wordsStream:
-                self.words = wordsStream.read().split('\n')
-        elif words:
-            self.words = words
-        else:
-            self.words = []
+
+preset_lists = [english_filler_words, spanish_filler_words]
+
+def get_word_lists():
+    return preset_lists
+
+class WordListNotFoundError(ValueError):
+    def __init__(self):
+        super().__init__()
+
+def get_words_from_word_list(word_list_name):
+    if word_list_name == None:
+        return None
+    
+    found_word_lists = [word_list for word_list in get_word_lists()
+                        if word_list.name == word_list_name]
+    
+    if len(found_word_lists) < 1:
+        raise WordListNotFoundError()
+    
+    return found_word_lists[0].words
