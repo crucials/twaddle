@@ -1,3 +1,4 @@
+printf "\n (!) this script works only on linux systems \n"
 cd ./src/ui/electron
 npm run build
 npx electron-builder
