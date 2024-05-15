@@ -2,7 +2,7 @@
 import CustomTable from '@/components/custom-table.vue'
 import TextInput from '@/components/ui/text-input.vue'
 import SheetDialog from '@/components/ui/sheet-dialog.vue'
-import filledButton from '@/components/ui/filled-button.vue'
+import FilledButton from '@/components/ui/filled-button.vue'
 import { SpokenTextStats } from '@/types/spoken-text-stats'
 import { computed, reactive } from 'vue';
 
@@ -38,26 +38,28 @@ const shrinkedStats = computed(() => {
 
 <template>
     <section>
-        <h2 class="text-2xl font-bold tracking-wide mb-6">
+        <h2 class="text-2xl font-bold tracking-wide mb-8">
             result
         </h2>
 
+        <SheetDialog heading="full text" trigger-button-container-class="mb-6">
+            <template #triggerButton>
+                <FilledButton>
+                    view full text
+                </FilledButton>
+            </template>
+
+            <template #default>
+                {{ stats.fullText }}
+            </template>
+        </SheetDialog>
+
+        <hr class="w-full max-w-96 bg-neutral-300 h-px border-none mb-6">
+
         <div v-if="stats.wordsStats.length > 0">
             <p class="text-neutral-500 mb-3">
-                {{ stats.wordsStats.length }} words.
+                {{ stats.wordsStats.length }} words
             </p>
-
-            <SheetDialog heading="full text" trigger-button-container-class="mb-5">
-                <template #triggerButton>
-                    <FilledButton>
-                        view full text
-                    </FilledButton>
-                </template>
-
-                <template #default>
-                    {{ stats.fullText }}
-                </template>
-            </SheetDialog>
 
             <form class="flex items-center gap-7 mb-6">
                 <TextInput
@@ -103,8 +105,7 @@ const shrinkedStats = computed(() => {
         </div>
 
         <p v-else class="text-neutral-500">
-            words count table will appear here after ~10 seconds, when the first
-            transcription happens
+            <slot name="no-words-fallback"></slot>
         </p>
     </section>
 </template>

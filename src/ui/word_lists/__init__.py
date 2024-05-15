@@ -6,3 +6,19 @@ preset_lists = [english_filler_words, spanish_filler_words]
 
 def get_word_lists():
     return preset_lists
+
+class WordListNotFoundError(ValueError):
+    def __init__(self):
+        super().__init__()
+
+def get_words_from_word_list(word_list_name):
+    if word_list_name == None:
+        return None
+    
+    found_word_lists = [word_list for word_list in get_word_lists()
+                        if word_list.name == word_list_name]
+    
+    if len(found_word_lists) < 1:
+        raise WordListNotFoundError()
+    
+    return found_word_lists[0].words

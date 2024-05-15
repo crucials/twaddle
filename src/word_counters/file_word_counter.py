@@ -27,6 +27,6 @@ class FileWordCounter(WordCounter):
             condition_on_previous_text=True
         )
 
-        print('finished transcription')
-
         self._count_stats(' '.join([segment.text for segment in segments_iterator]))
+
+        print('finished transcription')

@@ -39,7 +39,7 @@ async function startTranscribing() {
 
     loading.value = true
     
-    const response = await fetchWithErrorNotification('/audio-data-counter', {
+    const response = await fetchWithErrorNotification('/audio-file-word-counter', {
         method: 'POST',
         body: requestFormData,
         headers: new Headers()
@@ -94,6 +94,11 @@ async function startTranscribing() {
         <SpokenTextStatsView
             v-else-if="result"
             :stats="result"
-        />
+        >
+            <template #no-words-fallback>
+                no words were found, they are either not in the selected word list
+                or can't be detected
+            </template>
+        </SpokenTextStatsView>
     </Transition>
 </template>

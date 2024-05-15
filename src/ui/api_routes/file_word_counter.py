@@ -7,12 +7,13 @@ from werkzeug.exceptions import BadRequest, Conflict
 from utils.api_responses import create_successful_response
 from word_counters.file_word_counter import FileWordCounter
 from word_counters import WordCounter
+from ui.word_lists import WordListNotFoundError, get_words_from_word_list
 
 
 audio_data_word_counter_blueprint = flask.Blueprint(
-    'audio-data-counter',
+    'audio-file-word-counter',
     __name__,
-    url_prefix='/audio-data-counter'
+    url_prefix='/audio-file-word-counter'
 )
 
 counter: FileWordCounter | None = None
@@ -28,6 +29,7 @@ def start_audio_data_counter():
     }
 
     audio_file = flask.request.files.get('audio_file')
+    request_form_data = flask.request.form
 
     if audio_file == None:
         raise BadRequest('request must contain multipart form data ' +
@@ -49,9 +51,10 @@ def start_audio_data_counter():
     audio_file.save(temp_audio_file_path)
 
     try:
+        words_to_count = get_words_from_word_list(request_form_data.get('word_list_name'))
         counter = FileWordCounter(temp_audio_file_path,
-                                  flask.request.form.get('language'),
-                                  None)
+                                  request_form_data.get('language'),
+                                  words_to_count)
         
         counter.start()
         
@@ -63,6 +66,8 @@ def start_audio_data_counter():
             'full_text': counter.full_text,
             'words_stats': spoken_words_stats
         })
+    except WordListNotFoundError:
+        raise BadRequest('specified word list doesn\'t exist')
     except ValueError:
         raise BadRequest('specified language is not supported')
     except Exception as error:

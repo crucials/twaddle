@@ -48,6 +48,14 @@ const timer = computed(() => {
             </FilledButton>
         </div>
 
-        <SpokenTextStatsView :stats="result" />
+        <SpokenTextStatsView :stats="result">
+            <template #no-words-fallback>
+                words count table will appear here after ~10 seconds, 
+                when the first transcription happens
+                <br>
+                if table is not appearing, spoken words are either not in
+                the selected word list or can't be detected
+            </template>
+        </SpokenTextStatsView>
     </div>
 </template>

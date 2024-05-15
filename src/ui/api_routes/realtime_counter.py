@@ -5,7 +5,7 @@ from werkzeug.exceptions import Conflict, BadRequest
 
 from word_counters.realtime_word_counter import RealtimeWordCounter
 from word_counters import WordCounter
-from ui.word_lists import get_word_lists
+from ui.word_lists import get_words_from_word_list, WordListNotFoundError
 from utils.api_responses import create_successful_response
 
 
@@ -13,18 +13,6 @@ realtime_counter_blueprint = flask.Blueprint('realtime-counter', __name__,
                                                    url_prefix='/realtime-counter')
 
 counter: RealtimeWordCounter | None = None
-
-def __get_words_from_word_list(word_list_name):
-    if word_list_name == None:
-        return None
-    
-    found_word_lists = [word_list for word_list in get_word_lists()
-                        if word_list.name == word_list_name]
-    
-    if len(found_word_lists) < 1:
-        raise BadRequest(f'word list with a name {word_list_name} doesnt exist')
-    
-    return found_word_lists[0].words
 
 @realtime_counter_blueprint.post('/')
 def start_counter_from_microphone():
@@ -42,13 +30,15 @@ def start_counter_from_microphone():
     if counter and counter.running or loading:
         raise Conflict('words counting process was already started')
     try:
-        words_to_count = __get_words_from_word_list(request_body.get('word_list_name'))
+        words_to_count = get_words_from_word_list(request_body.get('word_list_name'))
         
         counter = RealtimeWordCounter(request_body.get('language'),
                                       request_body.get('recording_device_index'),
                                       words_to_count)
         counting_thread = Thread(target=counter.start)
         counting_thread.start()
+    except WordListNotFoundError as word_list_not_found_error:
+        raise BadRequest('specified word list doesn\'t exist')
     except ValueError:
         raise BadRequest('specified language is not supported')
     
