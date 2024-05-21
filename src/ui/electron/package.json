@@ -39,7 +39,7 @@
     "linux": {
       "target": "AppIMage"
     },
-    "windows": {
+    "win": {
       "target": "portable"
     },
     "directories": {
