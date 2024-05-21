@@ -2,10 +2,11 @@ import subprocess
 import os
 import signal
 from threading import Thread
+import platform
 
 from dotenv import load_dotenv
 import waitress
-from flask import Flask, jsonify
+from flask import Flask
 import waitress.server
 from werkzeug.exceptions import HTTPException
 
@@ -51,8 +52,16 @@ if os.environ.get('MODE') == 'DEVELOPMENT':
 else:
     print('launching electron in production mode, with bundled executable', '\n')
 
+    electron_executable_filename = None
+    if platform.system() == 'Windows':
+        electron_executable_filename = 'spoken-words-counter.exe'
+    elif platform.system() == 'Linux':
+        electron_executable_filename = 'spoken-words-counter.AppImage'
+    else:
+        raise Exception('only linux and windows operating systems are supported')
+
     electron_executable_path = create_path_from_executable(
-        'ui', 'electron', 'bin', 'spoken-words-counter.AppImage'
+        'ui', 'electron', 'bin', electron_executable_filename
     )
 
     electron_subprocess = subprocess.Popen([], executable=electron_executable_path,
