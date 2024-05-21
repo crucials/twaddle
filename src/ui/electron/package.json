@@ -39,6 +39,9 @@
     "linux": {
       "target": "AppIMage"
     },
+    "windows": {
+      "target": "portable"
+    },
     "directories": {
       "output": "bin"
     }
