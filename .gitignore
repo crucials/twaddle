@@ -2,6 +2,8 @@
 src/ui/bin/ungoogled-chromium.AppImage
 src/ui/bin/ungoogled-chromium.exe
 do.txt
+*.mp3
+*.wav
 
 
 # Byte-compiled / optimized / DLL files
