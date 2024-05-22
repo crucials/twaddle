@@ -54,9 +54,9 @@ else:
 
     electron_executable_filename = None
     if platform.system() == 'Windows':
-        electron_executable_filename = 'spoken-words-counter.exe'
+        electron_executable_filename = 'twaddle.exe'
     elif platform.system() == 'Linux':
-        electron_executable_filename = 'spoken-words-counter.AppImage'
+        electron_executable_filename = 'twaddle.AppImage'
     else:
         raise Exception('only linux and windows operating systems are supported')
 

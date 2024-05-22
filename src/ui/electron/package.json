@@ -1,5 +1,5 @@
 {
-  "name": "spoken-words-counter",
+  "name": "twaddle",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -33,8 +33,8 @@
     "vue-tsc": "^2.0.6"
   },
   "build": {
-    "appId": "spoken-words-counter",
-    "productName": "spoken-words-counter",
+    "appId": "twaddle",
+    "productName": "twaddle",
     "artifactName": "${productName}.${ext}",
     "linux": {
       "target": "AppIMage"

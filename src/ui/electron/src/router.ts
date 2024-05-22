@@ -4,7 +4,7 @@ import TranscribeFromFilePage from '@/pages/transcribe-from-file-page.vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 export const routes = [
-    { path: '/', component: HomePage, name: 'spoken-words-counter' },
+    { path: '/', component: HomePage, name: 'twaddle' },
     { path: '/record', component: RecordPage, name: 'record and transcribe' },
     {
         path: '/transcribe-from-file',
