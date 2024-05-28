@@ -3,7 +3,7 @@
 transcribes speech and calculates stats like total spoken words count and 
 all frequencies for all words
 
-https://github.com/crucials/twaddle/assets/83793845/8fd060ca-c27a-4667-9792-ba437b26aab0
+https://github.com/crucials/twaddle/assets/83793845/758fa9d5-6470-435d-8f72-9c675a8da9fd
 
 ## installation
 
