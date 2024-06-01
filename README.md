@@ -11,7 +11,7 @@ this is a desktop app and it uses your pc resources to convert speech to text:
 - transcription with cpu needs around 2.5gb of ram
 - transcription with gpu needs around 1.5gb of video ram, cant be used yet
 
-:penguin: [linux executable](https://github.com/crucials/twaddle/releases/download/v1.0.0-beta/twaddle-linux)
+:penguin: [linux executable](https://github.com/crucials/twaddle/releases/download/v1.1.0-beta/twaddle-linux.zip)
 
 ### manual
 
