@@ -27,7 +27,7 @@ def send_json_error_response(error: HTTPException):
             "explanation": error.description
         },
         "data": None,
-    }, error.code
+    }, error.code or 500
 
 for route_blueprint in routes:
     app.register_blueprint(route_blueprint)

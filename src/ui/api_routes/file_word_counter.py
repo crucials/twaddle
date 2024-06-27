@@ -43,7 +43,7 @@ def start_audio_data_counter():
     # if counter initialized but the transcription model hasnt been loaded yet
     loading = counter and not WordCounter.speech_transcriber
 
-    if counter and counter.running or loading:
+    if counter or loading:
         raise Conflict('words counting process was already started')
     
     extension = SUPPORTED_TYPES_EXTENSIONS[audio_file.mimetype]

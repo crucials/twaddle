@@ -4,6 +4,7 @@ from typing import Optional
 
 import pyaudio
 
+from ui.errors.transcriber_not_initialized_error import TranscriberNotInitializedError
 from word_counters import WordCounter
 from utils.transcribe_from_audio_frames import transcribe_from_audio_frames
 
@@ -25,6 +26,9 @@ class RealtimeWordCounter(WordCounter):
                                          sample_rate: int):
         if not self.running:
             self.__finished_last_transcribing = False
+
+        if WordCounter.speech_transcriber is None:
+            raise TranscriberNotInitializedError()
         
         print('started transcribing')
 

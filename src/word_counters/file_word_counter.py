@@ -1,11 +1,4 @@
-import wave
-import time
-import os
-from typing import Literal
-
-import pyaudio
-from faster_whisper import WhisperModel
-
+from ui.errors.transcriber_not_initialized_error import TranscriberNotInitializedError
 from word_counters import WordCounter
 
 
@@ -20,6 +13,9 @@ class FileWordCounter(WordCounter):
 
     def start(self):
         print('started transcribing')
+
+        if WordCounter.speech_transcriber is None:
+            raise TranscriberNotInitializedError()
 
         segments_iterator, _ = WordCounter.speech_transcriber.transcribe(
             self.audio_file_path,
