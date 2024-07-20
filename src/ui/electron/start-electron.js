@@ -9,6 +9,7 @@ function createWindow() {
         webPreferences: {
             // preload: path.join(__dirname, 'preload.js'),
         },
+        icon: 'public/favicon.ico'
     })
 
     win.loadFile('dist/index.html')
