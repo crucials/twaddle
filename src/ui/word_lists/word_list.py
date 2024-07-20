@@ -1,6 +1,11 @@
 class WordList:
-    def __init__(self, name: str, path: str | None = None,
-                 words: list[str] | None = None, created_by_user = False):
+    def __init__(
+        self,
+        name: str,
+        path: str | None = None,
+        words: list[str] | None = None,
+        created_by_user=False,
+    ):
         """
         ### Parameters
         `path`: from where to load word list txt data (one word on one line format).
@@ -10,8 +15,8 @@ class WordList:
         self.custom = created_by_user
 
         if path:
-            with open(path) as wordsStream:
-                self.words = wordsStream.read().split('\n')
+            with open(path) as words_stream:
+                self.words = words_stream.read().split("\n")
         elif words:
             self.words = words
         else:
