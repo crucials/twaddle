@@ -3,8 +3,10 @@ import CustomTable from '@/components/custom-table.vue'
 import TextInput from '@/components/ui/text-input.vue'
 import SheetDialog from '@/components/ui/sheet-dialog.vue'
 import FilledButton from '@/components/ui/filled-button.vue'
+import TextIcon from '@/components/ui/icons/text-icon.vue'
+import ExportButton from '@/components/export-button.vue'
 import { SpokenTextStats } from '@/types/spoken-text-stats'
-import { computed, reactive } from 'vue';
+import { computed, reactive } from 'vue'
 
 const props = defineProps<{
     stats: SpokenTextStats
@@ -42,17 +44,22 @@ const shrinkedStats = computed(() => {
             result
         </h2>
 
-        <SheetDialog heading="full text" trigger-button-container-class="mb-6">
-            <template #triggerButton>
-                <FilledButton>
-                    view full text
-                </FilledButton>
-            </template>
+        <div class="flex items-stretch gap-x-2 mb-6">
+            <SheetDialog heading="full text">
+                <template #triggerButton>
+                    <FilledButton>
+                        <TextIcon class="w-6" />
+                        view full text
+                    </FilledButton>
+                </template>
 
-            <template #default>
-                {{ stats.fullText }}
-            </template>
-        </SheetDialog>
+                <template #default>
+                    {{ stats.fullText }}
+                </template>
+            </SheetDialog>
+
+            <ExportButton :stats-to-export="stats" />
+        </div>
 
         <hr class="w-full max-w-96 bg-neutral-300 h-px border-none mb-6">
 

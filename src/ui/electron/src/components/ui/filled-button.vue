@@ -14,13 +14,16 @@ const buttonSize = useElementSize(buttonElement, undefined, { box: 'border-box' 
     <Component
         :is="tag || 'button'"
         ref="buttonElement"
-        class="filled-button bg-neutral-800 rounded-lg px-9 py-2.5
-            flex items-center gap-x-2 relative overflow-hidden"
+        class="filled-button bg-neutral-800 rounded-lg px-7 py-2.5
+            relative overflow-hidden"
     >
         <div class="polygon-background-container">
-            <div class="polygon-background" :style="{ height: `${buttonSize.height.value}px` }"></div>
+            <div
+                class="polygon-background"
+                :style="{ height: `${buttonSize.height.value}px` }"
+            ></div>
         </div>
-        <span class="relative text-white">
+        <span class="relative text-white flex items-center gap-x-2">
             <slot></slot>
         </span>
     </Component>    
