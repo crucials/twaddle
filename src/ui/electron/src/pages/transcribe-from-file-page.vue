@@ -94,6 +94,7 @@ async function startTranscribing() {
         <SpokenTextStatsView
             v-else-if="result"
             :stats="result"
+            :seconds-speaking="1"
         >
             <template #no-words-fallback>
                 no words were found, they are either not in the selected word list

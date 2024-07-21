@@ -23,7 +23,7 @@ const countingProcess = reactive<{
     secondsRunning?: number
     result?: SpokenTextStats
 }>({
-    secondsRunning: 0,
+    /* secondsRunning: 0,
     result: {
         wordsStats: [...Array(100).fill({
             word: 'fasdfsdf',
@@ -34,7 +34,7 @@ const countingProcess = reactive<{
         })],
         fullText: 'fasdfsdf fasdfsdf fasdfsdf: fasdfsdf fasdfsdf fasdfsdf - fasdfsdf, '
             + 'fasdfsdf. fasdfsdffasdfsdf fasdfsdf'
-    }
+    } */
 })
 
 let secondsCountingIntervalId: number | undefined = undefined

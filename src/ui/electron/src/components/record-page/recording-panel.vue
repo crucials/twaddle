@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import FilledButton from '@/components/ui/filled-button.vue'
-
-import { computed, reactive } from 'vue'
-import { SpokenTextStats } from '@/types/spoken-text-stats'
 import SpokenTextStatsView from '@/components/spoken-text-stats-view.vue'
+import { SpokenTextStats } from '@/types/spoken-text-stats'
+import { formatSeconds } from '@/utils/format-seconds'
+import { computed } from 'vue'
 
 const props = defineProps<{
     secondsPassed: number
@@ -13,25 +13,7 @@ const emit = defineEmits<{
     (event: 'reset'): void
 }>()
 
-const timer = computed(() => {
-    const date = new Date()
-    date.setHours(0, 0, 0, 0)
-    date.setMinutes(0)
-
-    date.setSeconds(props.secondsPassed)
-
-    const hours = `${date.getHours()}`.padStart(2, '0')
-    const minutesAndSeconds = date.toLocaleTimeString(undefined, {
-        minute: '2-digit', second: '2-digit'
-    })
-
-    if(hours === '00') {
-        return minutesAndSeconds
-    }
-    else {
-        return hours + ':' + minutesAndSeconds
-    }
-})
+const timer = computed(() => formatSeconds(props.secondsPassed))
 </script>
 
 <template>
@@ -48,7 +30,7 @@ const timer = computed(() => {
             </FilledButton>
         </div>
 
-        <SpokenTextStatsView :stats="result">
+        <SpokenTextStatsView :stats="result" :seconds-speaking="secondsPassed">
             <template #no-words-fallback>
                 words count table will appear here after ~10 seconds, 
                 when the first transcription happens

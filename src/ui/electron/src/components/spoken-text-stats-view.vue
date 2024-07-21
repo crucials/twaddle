@@ -10,6 +10,7 @@ import { computed, reactive } from 'vue'
 
 const props = defineProps<{
     stats: SpokenTextStats
+    secondsSpeaking: number
 }>()
 
 const viewOptions = reactive({
@@ -58,7 +59,7 @@ const shrinkedStats = computed(() => {
                 </template>
             </SheetDialog>
 
-            <ExportButton :stats-to-export="stats" />
+            <ExportButton :stats-to-export="stats" :seconds-speaking="secondsSpeaking" />
         </div>
 
         <hr class="w-full max-w-96 bg-neutral-300 h-px border-none mb-6">
