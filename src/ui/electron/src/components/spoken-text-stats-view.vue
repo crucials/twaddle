@@ -10,7 +10,7 @@ import { computed, reactive } from 'vue'
 
 const props = defineProps<{
     stats: SpokenTextStats
-    secondsSpeaking: number
+    secondsSpeaking: number | null
 }>()
 
 const viewOptions = reactive({

@@ -5,7 +5,7 @@ import FilledButton from '@/components/ui/filled-button.vue'
 import SpokenTextStatsView from '@/components/spoken-text-stats-view.vue'
 import Spinner from '@/components/ui/spinner.vue'
 import { TranscriptionOptions } from '@/types/transcription-options'
-import { SpokenTextStats } from '@/types/spoken-text-stats'
+import { SpeechFromFileStats } from '@/types/spoken-text-stats'
 import { useApi } from '@/composables/api'
 import { reactive, ref } from 'vue'
 
@@ -19,7 +19,7 @@ const formData = reactive<TranscriptionOptions & {
     wordListName: null,
 })
 
-const result = ref<SpokenTextStats>()
+const result = ref<SpeechFromFileStats>()
 const loading = ref(false)
 
 async function startTranscribing() {
@@ -49,8 +49,9 @@ async function startTranscribing() {
 
     if(response.data) {
         result.value = {
-            fullText: response.data.full_text,
-            wordsStats: response.data.words_stats
+            fullText: response.data['full_text'],
+            wordsStats: response.data['words_stats'],
+            audioFileSecondsDuration: response.data['audio_file_seconds_duration']
         }
     }
 }
@@ -94,7 +95,7 @@ async function startTranscribing() {
         <SpokenTextStatsView
             v-else-if="result"
             :stats="result"
-            :seconds-speaking="1"
+            :seconds-speaking="result.audioFileSecondsDuration"
         >
             <template #no-words-fallback>
                 no words were found, they are either not in the selected word list

@@ -1,6 +1,7 @@
 import time
 import os
 
+import pyaudio
 import flask
 from werkzeug.exceptions import BadRequest, Conflict
 
@@ -68,7 +69,11 @@ def start_audio_data_counter():
         ]
 
         return create_successful_response(
-            {"full_text": counter.full_text, "words_stats": spoken_words_stats}
+            {
+                "full_text": counter.full_text,
+                "words_stats": spoken_words_stats,
+                "audio_file_seconds_duration": counter.audio_file_seconds_duration,
+            }
         )
     except WordListNotFoundError as word_list_not_found_error:
         raise BadRequest(
@@ -80,3 +85,7 @@ def start_audio_data_counter():
         raise error
     finally:
         os.remove(temp_audio_file_path)
+
+
+# def get_audio_file_length(file: ):
+
